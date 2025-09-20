@@ -14,26 +14,26 @@ This document consolidates all questions and requirements for White.ai to fully 
 
 **Required Information (for Backend/Cloudflare Deployment):**
 
-*   **Cloudflare Workers AI Endpoint URL:**
-    *   **Addressed in Frontend.** The frontend is configured to call `https://api.white.ai/v1/genui`.
-*   **API Input Format (JSON):**
-    *   **Addressed in Frontend.** The frontend sends: `{"prompt": "string", "constraints": { "framework": "react", "style_guide": "tailwind_css_v3" }}`.
-*   **API Output Format (JSON):**
-    *   **Addressed in Frontend.** The frontend expects: `{"ui_component": "base64_string", "metadata": { ... }, "error": null}`.
-*   **Authentication/Authorization Details:**
-    *   **CRITICAL:** What is the actual secret token for the `Authorization: Bearer` header? This needs to be securely provided (e.g., via Cloudflare Secrets or environment variables during deployment).
-    *   What is the specific authentication method for the Cloudflare Worker itself to validate this token?
-*   **Rate Limiting/Usage Policies:**
-    *   Are there any rate limits or usage quotas for the Cloudflare Workers AI endpoint? If so, what are they, and how should the frontend handle exceeding them? (Frontend has basic error handling for 429, but specific policy details are needed for robust implementation).
-*   **Error Handling Specifications:**
-    *   What are the expected HTTP status codes and error message formats for different failure scenarios from the GenUI API? (Frontend has basic error handling for `response.ok` and generic catch, but more specific handling for 400, 401, 429, 500, 503 is needed based on backend implementation).
+- **Cloudflare Workers AI Endpoint URL:**
+  - **Addressed in Frontend.** The frontend is configured to call `https://api.white.ai/v1/genui`.
+- **API Input Format (JSON):**
+  - **Addressed in Frontend.** The frontend sends: `{"prompt": "string", "constraints": { "framework": "react", "style_guide": "tailwind_css_v3" }}`.
+- **API Output Format (JSON):**
+  - **Addressed in Frontend.** The frontend expects: `{"ui_component": "base64_string", "metadata": { ... }, "error": null}`.
+- **Authentication/Authorization Details:**
+  - **CRITICAL:** What is the actual secret token for the `Authorization: Bearer` header? This needs to be securely provided (e.g., via Cloudflare Secrets or environment variables during deployment).
+  - What is the specific authentication method for the Cloudflare Worker itself to validate this token?
+- **Rate Limiting/Usage Policies:**
+  - Are there any rate limits or usage quotas for the Cloudflare Workers AI endpoint? If so, what are they, and how should the frontend handle exceeding them? (Frontend has basic error handling for 429, but specific policy details are needed for robust implementation).
+- **Error Handling Specifications:**
+  - What are the expected HTTP status codes and error message formats for different failure scenarios from the GenUI API? (Frontend has basic error handling for `response.ok` and generic catch, but more specific handling for 400, 401, 429, 500, 503 is needed based on backend implementation).
 
 **Development Considerations (for your team's awareness):**
 
-*   **AI Model Selection:** Which specific AI model will be used for UI generation?
-*   **Prompt Engineering Strategy:** How will the user's raw prompt be processed/transformed before being sent to the AI model?
-*   **UI Output Constraints:** How will the AI's output be ensured to produce valid, well-formed HTML/CSS/JSX?
-*   **Scalability Plan:** How will the Cloudflare Worker handle anticipated load and concurrent requests?
+- **AI Model Selection:** Which specific AI model will be used for UI generation?
+- **Prompt Engineering Strategy:** How will the user's raw prompt be processed/transformed before being sent to the AI model?
+- **UI Output Constraints:** How will the AI's output be ensured to produce valid, well-formed HTML/CSS/JSX?
+- **Scalability Plan:** How will the Cloudflare Worker handle anticipated load and concurrent requests?
 
 ---
 
@@ -43,19 +43,19 @@ This document consolidates all questions and requirements for White.ai to fully 
 
 **Required Information:**
 
-*   **Markdown Content Files:**
-    *   Provide the full markdown (`.md`) content for the following key documents:
-        *   "The Principle of Symbiotic Disbelief"
-        *   "The Emergent Application"
-        *   (List any other core philosophical or architectural texts you wish to publish)
-*   **Source Location:** Confirm these documents will be provided from the `deepthoughtdocs` repository (Strunk.ai's domain).
-*   **Format:** Markdown (`.md`) files are preferred for easy integration and rendering.
-*   **Metadata for Each Document (Optional but Recommended):**
-    *   For each document, specify:
-        *   `title`: The display title for the web page.
-        *   `slug`: The URL-friendly path segment (e.g., `symbiotic-disbelief`).
-        *   `author`: (if different from DeepThought Labs).
-        *   `date_published`: For display purposes.
+- **Markdown Content Files:**
+  - Provide the full markdown (`.md`) content for the following key documents:
+    - "The Principle of Symbiotic Disbelief"
+    - "The Emergent Application"
+    - (List any other core philosophical or architectural texts you wish to publish)
+- **Source Location:** Confirm these documents will be provided from the `deepthoughtdocs` repository (Strunk.ai's domain).
+- **Format:** Markdown (`.md`) files are preferred for easy integration and rendering.
+- **Metadata for Each Document (Optional but Recommended):**
+  - For each document, specify:
+    - `title`: The display title for the web page.
+    - `slug`: The URL-friendly path segment (e.g., `symbiotic-disbelief`).
+    - `author`: (if different from DeepThought Labs).
+    - `date_published`: For display purposes.
 
 ---
 
@@ -67,16 +67,16 @@ This document consolidates all questions and requirements for White.ai to fully 
 
 **Required Information:**
 
-*   **License Key Validation API Endpoint:**
-    *   What is the API endpoint for validating a user's license key?
-    *   What is the input/output format for this API?
-    *   What authentication is required?
-*   **Download Link Generation API/Logic:**
-    *   How will secure, versioned download links for the DeepThought desktop application be generated based on a validated license?
-    *   What are the input/output formats and authentication for this?
-*   **User Data Storage/Retrieval:**
-    *   How will user-specific license data (e.g., purchased version, entitlement dates) be stored and retrieved securely?
-    *   What PII (if any) is collected, and how is it handled in compliance with privacy regulations?
+- **License Key Validation API Endpoint:**
+  - What is the API endpoint for validating a user's license key?
+  - What is the input/output format for this API?
+  - What authentication is required?
+- **Download Link Generation API/Logic:**
+  - How will secure, versioned download links for the DeepThought desktop application be generated based on a validated license?
+  - What are the input/output formats and authentication for this?
+- **User Data Storage/Retrieval:**
+  - How will user-specific license data (e.g., purchased version, entitlement dates) be stored and retrieved securely?
+  - What PII (if any) is collected, and how is it handled in compliance with privacy regulations?
 
 ---
 
@@ -86,12 +86,12 @@ This document consolidates all questions and requirements for White.ai to fully 
 
 **Required Information:**
 
-*   **Playbook Content:**
-    *   Provide markdown content for initial "playbooks" demonstrating integrations (e.g., Logseq, LibreOffice).
-*   **Vanguard Partner Journal Content:**
-    *   Provide initial "Vanguard Partner Journal" content (markdown format, potentially AI-generated from Strunk.ai).
-*   **Content Management Strategy:**
-    *   How will new playbooks and journals be added and managed over time? (e.g., direct markdown files in the repo, a headless CMS, integration with `deepthoughtdocs`?)
+- **Playbook Content:**
+  - Provide markdown content for initial "playbooks" demonstrating integrations (e.g., Logseq, LibreOffice).
+- **Vanguard Partner Journal Content:**
+  - Provide initial "Vanguard Partner Journal" content (markdown format, potentially AI-generated from Strunk.ai).
+- **Content Management Strategy:**
+  - How will new playbooks and journals be added and managed over time? (e.g., direct markdown files in the repo, a headless CMS, integration with `deepthoughtdocs`?)
 
 ---
 
@@ -103,10 +103,10 @@ This document consolidates all questions and requirements for White.ai to fully 
 
 **Required Information:**
 
-*   **Desktop App Key Generation Logic:**
-    *   Detailed specification of how the DeepThought desktop application will generate a unique, anonymous key for web/community access.
-*   **Key Validation Backend Service:**
-    *   API endpoint and specifications for a backend service to validate these generated keys.
+- **Desktop App Key Generation Logic:**
+  - Detailed specification of how the DeepThought desktop application will generate a unique, anonymous key for web/community access.
+- **Key Validation Backend Service:**
+  - API endpoint and specifications for a backend service to validate these generated keys.
 
 ---
 
@@ -116,20 +116,20 @@ This document consolidates all questions and requirements for White.ai to fully 
 
 **Required Information:**
 
-*   **Shared Graph Data Structure:**
-    *   Detailed specification of the data structure for the "Community Innovation" graph (blocks, personas, workflows).
-*   **Sync Protocol/API:**
-    *   API endpoints and protocol for managing and distributing this shared graph (e.g., peer-to-peer, centralized hub).
-*   **Desktop App Integration:**
-    *   Specifications for how the DeepThought desktop app will integrate with this sync mechanism.
+- **Shared Graph Data Structure:**
+  - Detailed specification of the data structure for the "Community Innovation" graph (blocks, personas, workflows).
+- **Sync Protocol/API:**
+  - API endpoints and protocol for managing and distributing this shared graph (e.g., peer-to-peer, centralized hub).
+- **Desktop App Integration:**
+  - Specifications for how the DeepThought desktop app will integrate with this sync mechanism.
 
 ---
 
 ### **General Requirements & Preferences**
 
-*   **Visual Assets:**
-    *   Provide any specific logos, icons, or imagery (e.g., SVG, PNG) to be incorporated into the site.
-*   **Brand Guidelines:**
-    *   Any specific brand guidelines, color palettes, or typography preferences beyond the current Tailwind CSS defaults.
-*   **Feedback on Current UI:**
-    *   Specific feedback on the current styling and layout of the landing page, whitepaper, roadmap, and atelier pages.
+- **Visual Assets:**
+  - Provide any specific logos, icons, or imagery (e.g., SVG, PNG) to be incorporated into the site.
+- **Brand Guidelines:**
+  - Any specific brand guidelines, color palettes, or typography preferences beyond the current Tailwind CSS defaults.
+- **Feedback on Current UI:**
+  - Specific feedback on the current styling and layout of the landing page, whitepaper, roadmap, and atelier pages.
