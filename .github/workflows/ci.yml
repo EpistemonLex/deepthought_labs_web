@@ -18,12 +18,10 @@ jobs:
           node-version: '20.x'
       - name: Install dependencies
         run: npm install
-      - name: Run linter
-        run: npm run lint
+      - name: Run quality gate
+        run: npm run verify
       - name: Run format check
         run: npm run format:check
-      - name: Run unit tests
-        run: npm run test
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Run e2e tests
