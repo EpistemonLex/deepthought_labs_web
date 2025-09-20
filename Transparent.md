@@ -6,19 +6,20 @@ The project is founded on the core principles of user sovereignty, architectural
 
 For rapid reference, the following table summarizes all API endpoints defined within this specification.
 
-Phase	Endpoint URL	HTTP Method	Authentication	Brief Description
-1	https://api.white.ai/v1/genui	POST	Static Bearer Token	Generates UI components from a natural language prompt.
-2	https://api.white.ai/v1/licenses/validate	POST	Static API Key	Validates a user's software license key.
-2	https://api.white.ai/v1/downloads/request	POST	Static API Key	Requests a short-lived token for a secure software download.
-2	https://api.white.ai/v1/downloads/retrieve	GET	JWT (Query Param)	Retrieves the software binary using a single-use download token.
-3	https://api.white.ai/v2/auth/verify	POST	None	Verifies a cryptographic signature for product-led authentication.
-3	wss://api.white.ai/v2/graph/subscribe	WebSocket	Session JWT	Real-time CRDT synchronization hub for the knowledge graph.
-3	https://api.white.ai/v2/graph/state	GET	Session JWT	Retrieves a full snapshot of a CRDT document for state catch-up.
+Phase Endpoint URL HTTP Method Authentication Brief Description
+1 https://api.white.ai/v1/genui POST Static Bearer Token Generates UI components from a natural language prompt.
+2 https://api.white.ai/v1/licenses/validate POST Static API Key Validates a user's software license key.
+2 https://api.white.ai/v1/downloads/request POST Static API Key Requests a short-lived token for a secure software download.
+2 https://api.white.ai/v1/downloads/retrieve GET JWT (Query Param) Retrieves the software binary using a single-use download token.
+3 https://api.white.ai/v2/auth/verify POST None Verifies a cryptographic signature for product-led authentication.
+3 wss://api.white.ai/v2/graph/subscribe WebSocket Session JWT Real-time CRDT synchronization hub for the knowledge graph.
+3 https://api.white.ai/v2/graph/state GET Session JWT Retrieves a full snapshot of a CRDT document for state catch-up.
 
 Export to Sheets
 Part I: Foundational Infrastructure & The Canon
+
 1. The Atelier: GenUI Backend Specification (api.white.ai/v1/genui)
-This section details the complete backend architecture for the Generative UI (GenUI) feature, which will be built on Cloudflare's serverless platform, combining Cloudflare Workers for logic, Workers AI for intelligence, and the WAF for security.
+   This section details the complete backend architecture for the Generative UI (GenUI) feature, which will be built on Cloudflare's serverless platform, combining Cloudflare Workers for logic, Workers AI for intelligence, and the WAF for security.
 
 1.1. Secure API Access Protocol
 1.1.1. Authentication Token
@@ -27,18 +28,18 @@ The api.white.ai/v1/genui endpoint will be secured using a static bearer token. 
 Definitive Token: The secret token to be used in the Authorization: Bearer <TOKEN> header is:
 wht-live-sk-7b3d9a8f-c1e0-4f6a-8d2b-5c9e1a4g0h2i
 
-Secure Retrieval Method: This token must not be hardcoded into the frontend source code. For the White.ai frontend, which is deployed as a Cloudflare Pages application, the token will be configured as a secret environment variable within the Cloudflare dashboard. The variable will be named GENUI_API_TOKEN. The frontend application code will access this token from its runtime environment, ensuring it is never exposed in public repositories or client-side assets.   
+Secure Retrieval Method: This token must not be hardcoded into the frontend source code. For the White.ai frontend, which is deployed as a Cloudflare Pages application, the token will be configured as a secret environment variable within the Cloudflare dashboard. The variable will be named GENUI_API_TOKEN. The frontend application code will access this token from its runtime environment, ensuring it is never exposed in public repositories or client-side assets.  
 
 1.1.2. Worker Authentication Logic
 The Cloudflare Worker script handling requests for the endpoint will implement a static token check.
 
-Validation Mechanism: Upon receiving a request, the Worker will extract the Authorization header. It will parse the bearer token and perform a timing-safe comparison against the GENUI_API_TOKEN secret, which will be securely bound to the Worker's environment. The use of a timing-safe comparison function is mandatory to prevent timing attacks, where an attacker could infer the validity of a token based on the server's response time.   
+Validation Mechanism: Upon receiving a request, the Worker will extract the Authorization header. It will parse the bearer token and perform a timing-safe comparison against the GENUI_API_TOKEN secret, which will be securely bound to the Worker's environment. The use of a timing-safe comparison function is mandatory to prevent timing attacks, where an attacker could infer the validity of a token based on the server's response time.  
 
-The selection of a static bearer token for Phase 1 is a pragmatic choice, prioritizing rapid implementation and ease of use for the initial demo. This approach, however, is not intended for long-term, high-security, or multi-user scenarios. It does not provide per-user identity, granular permissions, or a mechanism for token rotation. The project roadmap accounts for this by introducing a more sophisticated, JWT-based cryptographic identity system in Phase 3, which will supersede this initial mechanism. This aligns the technical evolution of the platform with its growing security and feature requirements.   
+The selection of a static bearer token for Phase 1 is a pragmatic choice, prioritizing rapid implementation and ease of use for the initial demo. This approach, however, is not intended for long-term, high-security, or multi-user scenarios. It does not provide per-user identity, granular permissions, or a mechanism for token rotation. The project roadmap accounts for this by introducing a more sophisticated, JWT-based cryptographic identity system in Phase 3, which will supersede this initial mechanism. This aligns the technical evolution of the platform with its growing security and feature requirements.  
 
 1.2. API Gateway Policies & Error Handling
 1.2.1. Rate Limiting Policy
-To prevent abuse and ensure service availability, the https://api.white.ai/v1/genui endpoint will be protected by a Cloudflare WAF Rate Limiting Rule. This rule will be configured with the following definitive parameters :   
+To prevent abuse and ensure service availability, the https://api.white.ai/v1/genui endpoint will be protected by a Cloudflare WAF Rate Limiting Rule. This rule will be configured with the following definitive parameters :  
 
 Characteristics: ip.src (requests will be counted on a per-source-IP-address basis).
 
@@ -53,38 +54,38 @@ Action: block.
 This policy is designed to be permissive enough for legitimate demonstration and testing while effectively mitigating simple denial-of-service or brute-force attacks.
 
 1.2.2. Detailed Error Handling
-All API error responses, across all endpoints, must adhere to a standardized JSON schema to ensure predictable and consistent client-side error handling. This structure provides a machine-readable error code and a human-readable message, a pattern adopted from industry best practices.   
+All API error responses, across all endpoints, must adhere to a standardized JSON schema to ensure predictable and consistent client-side error handling. This structure provides a machine-readable error code and a human-readable message, a pattern adopted from industry best practices.  
 
 The standard error schema is:
 
 JSON
 
 {
-  "error": {
-    "code": "string",
-    "message": "string"
-  }
+"error": {
+"code": "string",
+"message": "string"
+}
 }
 The following table specifies the exact error responses for the api.white.ai/v1/genui endpoint.
 
-HTTP Status	Code	Message	Example JSON Body
-400 Bad Request	invalid_request	The request body is missing or malformed. A 'prompt' field is required.	{"error": {"code": "invalid_request", "message": "The request body is missing or malformed. A 'prompt' field is required."}}
-401 Unauthorized	auth_invalid_token	The provided authentication token is missing or invalid.	{"error": {"code": "auth_invalid_token", "message": "The provided authentication token is missing or invalid."}}
-429 Too Many Requests	rate_limit_exceeded	You have exceeded the rate limit. Please try again in 60 seconds.	{"error": {"code": "rate_limit_exceeded", "message": "You have exceeded the rate limit. Please try again in 60 seconds."}}
-500 Internal Server Error	internal_server_error	An unexpected error occurred on the server.	{"error": {"code": "internal_server_error", "message": "An unexpected error occurred on the server."}}
-503 Service Unavailable	service_unavailable	The AI model service is temporarily unavailable. Please try again later.	{"error": {"code": "service_unavailable", "message": "The AI model service is temporarily unavailable. Please try again later."}}
+HTTP Status Code Message Example JSON Body
+400 Bad Request invalid_request The request body is missing or malformed. A 'prompt' field is required. {"error": {"code": "invalid_request", "message": "The request body is missing or malformed. A 'prompt' field is required."}}
+401 Unauthorized auth_invalid_token The provided authentication token is missing or invalid. {"error": {"code": "auth_invalid_token", "message": "The provided authentication token is missing or invalid."}}
+429 Too Many Requests rate_limit_exceeded You have exceeded the rate limit. Please try again in 60 seconds. {"error": {"code": "rate_limit_exceeded", "message": "You have exceeded the rate limit. Please try again in 60 seconds."}}
+500 Internal Server Error internal_server_error An unexpected error occurred on the server. {"error": {"code": "internal_server_error", "message": "An unexpected error occurred on the server."}}
+503 Service Unavailable service_unavailable The AI model service is temporarily unavailable. Please try again later. {"error": {"code": "service_unavailable", "message": "The AI model service is temporarily unavailable. Please try again later."}}
 
 Export to Sheets
 1.3. Generative UI Model & Prompting Architecture
 1.3.1. AI Model Selection
 The backend Cloudflare Worker will utilize one of the large language models available through the Cloudflare Workers AI platform.
 
-Model Name: @cf/meta/llama-3.1-8b-instruct.   
+Model Name: @cf/meta/llama-3.1-8b-instruct.  
 
 Rationale: This model is selected for its strong instruction-following capabilities, performance, and cost-effectiveness within the Cloudflare ecosystem. Its balance of features makes it well-suited for the structured and complex task of generating UI component code from natural language descriptions.
 
 1.3.2. High-Level Prompt Engineering Strategy
-A multi-step Chain-of-Thought (CoT) prompting strategy will be employed to ensure the reliability, accuracy, and debuggability of the UI generation process. This approach is not merely a technical optimization; it is a core architectural decision that embodies the "Transparent Workshop" philosophy. By forcing the model to externalize its reasoning process, we move away from a "black box" system and toward one whose generative process can be audited and understood. The intermediate reasoning steps generated by the model can be logged for debugging and analysis, providing a transparent view into how the AI translates a user's intent into functional code.   
+A multi-step Chain-of-Thought (CoT) prompting strategy will be employed to ensure the reliability, accuracy, and debuggability of the UI generation process. This approach is not merely a technical optimization; it is a core architectural decision that embodies the "Transparent Workshop" philosophy. By forcing the model to externalize its reasoning process, we move away from a "black box" system and toward one whose generative process can be audited and understood. The intermediate reasoning steps generated by the model can be logged for debugging and analysis, providing a transparent view into how the AI translates a user's intent into functional code.  
 
 The CoT process within the Worker will consist of three distinct stages:
 
@@ -95,7 +96,7 @@ Component Mapping: In the second stage, the prompt will guide the model to map t
 Code Generation: Finally, with a structured plan derived from the previous steps, the model will be prompted to generate the final, clean, and syntactically correct code (e.g., React/JSX) that implements the mapped component structure.
 
 2. The Canon: Core Architectural & Philosophical Texts
-This section provides the complete, finalized markdown content for the foundational documents of the White.ai project. These texts establish the core philosophy and are ready for publication. The content has been authored from first principles to align with the project's vision of agentic AI, user sovereignty, and transparent systems.
+   This section provides the complete, finalized markdown content for the foundational documents of the White.ai project. These texts establish the core philosophy and are ready for publication. The content has been authored from first principles to align with the project's vision of agentic AI, user sovereignty, and transparent systems.
 
 2.1. "The Principle of Symbiotic Disbelief"
 Metadata:
@@ -155,19 +156,19 @@ For decades, the paradigm of software development has been fundamentally monolit
 An Emergent Application is not a single program but a dynamic, decentralized system composed of three core primitives: Sovereign Agents, a Shared State Fabric, and a Protocol for Interaction. Complex, personalized application experiences are not explicitly coded but arise from the real-time collaboration of these components, orchestrated by the user's intent.
 
 1. The Sovereign Agent
-The fundamental unit of an Emergent Application is the Sovereign Agent. This is not merely a user account; it is a user's cryptographically-verifiable, self-owned identity. Each user generates and controls their own private key, stored securely on their personal devices. This key is their passport to the digital world, allowing them to authenticate, authorize, and sign interactions without relying on a centralized identity provider.
+   The fundamental unit of an Emergent Application is the Sovereign Agent. This is not merely a user account; it is a user's cryptographically-verifiable, self-owned identity. Each user generates and controls their own private key, stored securely on their personal devices. This key is their passport to the digital world, allowing them to authenticate, authorize, and sign interactions without relying on a centralized identity provider.
 
 This cryptographic identity is the foundation of user sovereignty. It ensures that the user, and only the user, is the ultimate authority over their data and actions. In this model, the "application" does not own the user's identity; the user brings their identity to the application. This architectural choice is the bedrock of a trustless system where control is pushed to the edges, directly into the hands of the user.
 
 2. The Shared State Fabric
-Traditional applications silo data in centralized databases, creating moats that prevent interoperability and lock users into a single platform. The Emergent Application replaces this with a Shared State Fabric, a distributed data layer built on Conflict-free Replicated Data Types (CRDTs).
+   Traditional applications silo data in centralized databases, creating moats that prevent interoperability and lock users into a single platform. The Emergent Application replaces this with a Shared State Fabric, a distributed data layer built on Conflict-free Replicated Data Types (CRDTs).
 
 CRDTs are data structures that can be updated concurrently by multiple users without coordination, and which will always mathematically converge to the same state. Think of it as a shared digital canvas where anyone can draw at any time, and the final picture is always a perfect merge of everyone's contributions, regardless of network delays or offline edits.
 
 This fabric is the medium for collaboration. When a user creates a document, a knowledge graph, or any shared digital artifact, they are creating a CRDT-based object within this fabric. Other Sovereign Agents can be invited to interact with this object. Their changes are broadcast as cryptographically signed deltas, and the state is seamlessly synchronized across all participants' devices. There is no single, central "source of truth" database; the truth is the convergent state of the distributed fabric itself.
 
 3. The Protocol for Interaction
-With Sovereign Agents and a Shared State Fabric, the final piece is the protocol that governs their interaction. This is not a rigid API in the traditional sense, but a lightweight set of rules for how agents discover each other, request access to shared objects, and exchange state deltas.
+   With Sovereign Agents and a Shared State Fabric, the final piece is the protocol that governs their interaction. This is not a rigid API in the traditional sense, but a lightweight set of rules for how agents discover each other, request access to shared objects, and exchange state deltas.
 
 The primary communication channel is a hybrid network of peer-to-peer connections and decentralized relays. When possible, agents communicate directly, minimizing latency and reliance on central infrastructure. When direct connection is not feasible, they can use a network of hubs to relay messages.
 
@@ -185,7 +186,7 @@ Part II: The Sovereign Toolkit & Open Blueprints
 This part defines the commercial and community-facing infrastructure, moving from foundational technology and philosophy to user-facing utilities and content.
 
 3. Sovereign Utility API Specification
-This section provides the definitive specifications for the APIs that will manage commercial software licenses and the secure delivery of the DeepThought desktop application.
+   This section provides the definitive specifications for the APIs that will manage commercial software licenses and the secure delivery of the DeepThought desktop application.
 
 3.1. License Key Validation Service
 This endpoint is responsible for validating a user's license key against the central registry. It will be used by the DeepThought application upon activation and for periodic checks.
@@ -199,12 +200,12 @@ JSON Input Schema:
 JSON
 
 {
-  "license_key": "string",
-  "product_id": "string",
-  "fingerprint": {
-    "type": "string",
-    "value": "string"
-  }
+"license_key": "string",
+"product_id": "string",
+"fingerprint": {
+"type": "string",
+"value": "string"
+}
 }
 license_key: The license key provided by the user.
 
@@ -217,10 +218,10 @@ JSON Output Schema (200 OK - Valid):
 JSON
 
 {
-  "status": "valid",
-  "license_key": "string",
-  "tier": "string",
-  "expires_at": "string"
+"status": "valid",
+"license_key": "string",
+"tier": "string",
+"expires_at": "string"
 }
 status: Indicates the license is valid.
 
@@ -233,9 +234,9 @@ JSON Output Schema (404 Not Found / 403 Forbidden - Invalid):
 JSON
 
 {
-  "status": "invalid",
-  "reason_code": "string",
-  "message": "string"
+"status": "invalid",
+"reason_code": "string",
+"message": "string"
 }
 status: Indicates the license is invalid.
 
@@ -244,7 +245,7 @@ reason_code: A machine-readable code for the failure (e.g., not_found, expired, 
 message: A human-readable explanation of the failure.
 
 3.2. Secure Download Service
-The software download process is architected as a two-step flow to enhance security. This prevents the direct sharing of download links and ensures that every download is authorized and ephemeral. First, a client authenticates to request a temporary download token. Second, the client uses this single-use token to retrieve the software binary.   
+The software download process is architected as a two-step flow to enhance security. This prevents the direct sharing of download links and ensures that every download is authorized and ephemeral. First, a client authenticates to request a temporary download token. Second, the client uses this single-use token to retrieve the software binary.  
 
 3.2.1. Step 1: Download Token Request API
 URL: POST https://api.white.ai/v1/downloads/request
@@ -256,10 +257,10 @@ JSON Input Schema:
 JSON
 
 {
-  "license_key": "string",
-  "product_id": "string",
-  "version": "string",
-  "platform": "string"
+"license_key": "string",
+"product_id": "string",
+"version": "string",
+"platform": "string"
 }
 license_key: A valid, active license key.
 
@@ -274,10 +275,10 @@ JSON Output Schema (200 OK):
 JSON
 
 {
-  "download_token": "string",
-  "expires_in": 300,
-  "file_name": "string",
-  "file_size": "integer"
+"download_token": "string",
+"expires_in": 300,
+"file_name": "string",
+"file_size": "integer"
 }
 download_token: A short-lived, single-use JSON Web Token (JWT) authorizing one download.
 
@@ -299,21 +300,21 @@ On Success (200 OK): The service returns the binary file with the appropriate Co
 On Failure (403 Forbidden): If the token is invalid, expired, or already used, the service returns a 403 Forbidden status with a standard error JSON body.
 
 3.3. PII Handling & Data Privacy
-This policy defines the classification of Personally Identifiable Information (PII) collected by the system and mandates the technical controls for its handling, in compliance with regulations such as GDPR and CCPA.   
+This policy defines the classification of Personally Identifiable Information (PII) collected by the system and mandates the technical controls for its handling, in compliance with regulations such as GDPR and CCPA.  
 
 Final PII Data Classification and Handling Policy:
-The following table provides an unambiguous directive for all engineering work involving user data. It maps each data element to a classification level and the corresponding mandatory technical controls.   
+The following table provides an unambiguous directive for all engineering work involving user data. It maps each data element to a classification level and the corresponding mandatory technical controls.  
 
-Data Element	PII Classification	Data Source	Handling Controls (GDPR/CCPA Compliance)
-User Email	Level 1 - Confidential	License Purchase	Encrypted at rest (AES-256); Access controlled via IAM roles; Included in data subject access/erasure requests.
-License Key	Level 2 - Sensitive	License Generation	Stored hashed (SHA-256); Accessed via internal service API only; Not logged in plaintext.
-IP Address	Level 2 - Sensitive	API Logs	Anonymized in logs after 30 days; Not correlated with user identity in analytics platforms.
-Device Fingerprint	Level 2 - Sensitive	License Validation	Stored hashed (SHA-256); Used solely for counting activations against a license limit.
+Data Element PII Classification Data Source Handling Controls (GDPR/CCPA Compliance)
+User Email Level 1 - Confidential License Purchase Encrypted at rest (AES-256); Access controlled via IAM roles; Included in data subject access/erasure requests.
+License Key Level 2 - Sensitive License Generation Stored hashed (SHA-256); Accessed via internal service API only; Not logged in plaintext.
+IP Address Level 2 - Sensitive API Logs Anonymized in logs after 30 days; Not correlated with user identity in analytics platforms.
+Device Fingerprint Level 2 - Sensitive License Validation Stored hashed (SHA-256); Used solely for counting activations against a license limit.
 
 Export to Sheets
 Specific Technical Controls for GDPR/CCPA Compliance:
 
-Encryption: All PII classified as Level 1 or 2 will be encrypted at rest in all databases (e.g., using AES-256) and in transit using TLS 1.3 for all API communication.   
+Encryption: All PII classified as Level 1 or 2 will be encrypted at rest in all databases (e.g., using AES-256) and in transit using TLS 1.3 for all API communication.  
 
 Access Control: Production access to PII is strictly limited to authorized personnel via Cloudflare Zero Trust and granular IAM roles, enforcing the principle of least privilege. Direct database access is prohibited; all modifications must occur through audited service APIs.
 
@@ -322,10 +323,10 @@ User Rights Management: An internal, documented process will be established to h
 Data Retention Policy: PII will be retained only for the duration that the associated license is active, plus a 180-day grace period for recovery. Following this period, the data will be automatically and irreversibly anonymized or deleted from all production systems.
 
 4. The Open Blueprint: Content Strategy & Initial Playbooks
-This section defines the content management strategy and provides the initial set of "playbooks" and "partner journals" to populate the website.
+   This section defines the content management strategy and provides the initial set of "playbooks" and "partner journals" to populate the website.
 
 4.1. Initial Playbook Content
-The following playbooks provide practical, step-by-step guides for integrating DeepThought with other popular tools, following a standard structure for integration guides.   
+The following playbooks provide practical, step-by-step guides for integrating DeepThought with other popular tools, following a standard structure for integration guides.  
 
 Playbook 1: "Integrating DeepThought with Logseq"
 
@@ -421,7 +422,6 @@ In the "Extraction Schema" field, define the structure of the data you want in J
 
 Execute the agent. DeepThought will read the spreadsheet, extract the relevant data according to your schema, and output a clean JSON array.
 
-
 4.2. Initial Vanguard Partner Journal Content
 Journal 1: "Case Study: How Acme Corp Accelerated Research with DeepThought"
 
@@ -457,25 +457,25 @@ Knowledge Persistence: The centralized graph became their collective brain, pres
 The content management strategy will be implemented in two distinct phases to align with the project's evolving needs.
 
 Phase 2 Strategy (Confirmed): Git-Based Workflow
-For the initial launch and Phase 2, all content (including The Canon, Playbooks, and Journals) will be managed directly within the project's main Git repository as markdown files. This approach offers several key advantages for the early stages of the project: it integrates seamlessly with existing developer workflows, provides robust version control and history for all content, and eliminates the operational overhead of a separate CMS. This "content-as-code" methodology is ideal for a technically-focused team and ensures that content changes are subject to the same review and deployment processes as application code.   
+For the initial launch and Phase 2, all content (including The Canon, Playbooks, and Journals) will be managed directly within the project's main Git repository as markdown files. This approach offers several key advantages for the early stages of the project: it integrates seamlessly with existing developer workflows, provides robust version control and history for all content, and eliminates the operational overhead of a separate CMS. This "content-as-code" methodology is ideal for a technically-focused team and ensures that content changes are subject to the same review and deployment processes as application code.  
 
 Phase 3 Long-Term Plan (Confirmed): Migration to API-Driven Headless CMS
-As the project scales and the need for contributions from non-technical partners and marketing teams increases, the limitations of a Git-based workflow will become a bottleneck. Therefore, the long-term plan is to migrate to an API-driven headless CMS in Phase 3. This will provide a user-friendly editing interface for content creators while maintaining a clean, API-first architecture for developers.   
+As the project scales and the need for contributions from non-technical partners and marketing teams increases, the limitations of a Git-based workflow will become a bottleneck. Therefore, the long-term plan is to migrate to an API-driven headless CMS in Phase 3. This will provide a user-friendly editing interface for content creators while maintaining a clean, API-first architecture for developers.  
 
-Selected Provider: Strapi has been selected as the target headless CMS for the Phase 3 migration. Its open-source nature, robust API capabilities, and customizable admin panel make it an excellent fit for the project's long-term vision and "Transparent Workshop" ethos.   
+Selected Provider: Strapi has been selected as the target headless CMS for the Phase 3 migration. Its open-source nature, robust API capabilities, and customizable admin panel make it an excellent fit for the project's long-term vision and "Transparent Workshop" ethos.  
 
 Part III: The Distributed Knowledge Network (V2 Architecture)
 This part outlines the forward-looking technical architecture for Phase 3, which realizes the vision of a decentralized, user-centric platform.
 
 5. Product-Led Cryptographic Identity
-This section specifies the protocol for the DeepThought desktop application to generate and use a sovereign, device-based cryptographic identity for authentication, eliminating the need for traditional passwords.
+   This section specifies the protocol for the DeepThought desktop application to generate and use a sovereign, device-based cryptographic identity for authentication, eliminating the need for traditional passwords.
 
 5.1. Desktop App Key Generation & Storage
 Cryptographic Library and Curve:
 
 Specification: The desktop application will use the OpenSSL library for all cryptographic operations. It will generate an Elliptic Curve Cryptography (ECC) key pair using the secp521r1 curve.
 
-Rationale: OpenSSL is a mature, universally trusted, and rigorously audited cryptographic library. The secp521r1 curve is chosen for its high level of security, providing a strong foundation for a user's long-term digital identity.   
+Rationale: OpenSSL is a mature, universally trusted, and rigorously audited cryptographic library. The secp521r1 curve is chosen for its high level of security, providing a strong foundation for a user's long-term digital identity.  
 
 Secure Storage Locations:
 
@@ -487,12 +487,12 @@ Windows: Credential Manager (leveraging the Data Protection API - DPAPI)
 
 Linux: Secret Service API (interfacing with backends like GNOME Keyring or KWallet)
 
-Rationale: Utilizing these native OS services ensures that the private key is protected by the highest level of security available on the platform, including hardware-level protections like a TPM or Secure Enclave where available. This is the industry-standard practice for securely managing sensitive credentials on desktop applications.   
+Rationale: Utilizing these native OS services ensures that the private key is protected by the highest level of security available on the platform, including hardware-level protections like a TPM or Secure Enclave where available. This is the industry-standard practice for securely managing sensitive credentials on desktop applications.  
 
 5.2. Challenge-Response Communication
 Chosen Method: Secure Local WebSocket (WSS) Server
 
-Specification: The DeepThought desktop application will instantiate and run a local WebSocket server listening on a designated high-numbered port (e.g., wss://localhost:38472). When the White.ai web frontend requires authentication, its client-side JavaScript will attempt to establish a connection with this local server. This provides a modern, standardized, and secure bidirectional communication channel between the browser and the local application, superior to older methods like custom protocol handlers which can have inconsistent browser support and security models. The desktop app will generate a self-signed certificate for the WSS server, which is permissible for    
+Specification: The DeepThought desktop application will instantiate and run a local WebSocket server listening on a designated high-numbered port (e.g., wss://localhost:38472). When the White.ai web frontend requires authentication, its client-side JavaScript will attempt to establish a connection with this local server. This provides a modern, standardized, and secure bidirectional communication channel between the browser and the local application, superior to older methods like custom protocol handlers which can have inconsistent browser support and security models. The desktop app will generate a self-signed certificate for the WSS server, which is permissible for  
 
 localhost connections in modern browsers.
 
@@ -506,9 +506,9 @@ JSON Input Schema:
 JSON
 
 {
-  "public_key": "string",
-  "challenge": "string",
-  "signature": "string"
+"public_key": "string",
+"challenge": "string",
+"signature": "string"
 }
 public_key: The user's public key in PEM format.
 
@@ -521,8 +521,8 @@ JSON Output Schema (200 OK - Success):
 JSON
 
 {
-  "status": "verified",
-  "session_token": "string"
+"status": "verified",
+"session_token": "string"
 }
 session_token: A short-lived JWT that the web frontend can use for subsequent authenticated API requests during the session.
 
@@ -531,20 +531,19 @@ JSON Output Schema (401 Unauthorized - Failure):
 JSON
 
 {
-  "status": "failed",
-  "reason_code": "invalid_signature",
-  "message": "The provided signature could not be verified with the given public key."
-}
-6. Community Innovation Sync Protocol
+"status": "failed",
+"reason_code": "invalid_signature",
+"message": "The provided signature could not be verified with the given public key."
+} 6. Community Innovation Sync Protocol
 This section defines the architecture for the distributed knowledge graph, which is the core of the collaborative features of the platform.
 
 6.1. CRDT Library & Sync Architecture
 CRDT Library Selection: Yjs
 
-Rationale: Yjs is selected as the CRDT implementation due to its maturity, high performance, and extensive ecosystem. It is a well-regarded, production-proven library for building complex, real-time collaborative applications and offers a modular set of providers for networking and persistence, making it highly adaptable to our architecture.   
+Rationale: Yjs is selected as the CRDT implementation due to its maturity, high performance, and extensive ecosystem. It is a well-regarded, production-proven library for building complex, real-time collaborative applications and offers a modular set of providers for networking and persistence, making it highly adaptable to our architecture.  
 
 Synchronization Architecture: A hybrid central-hub model.
-This architecture combines the reliability of a central server with the low-latency potential of peer-to-peer communication. While CRDTs are inherently decentralized, a central hub is crucial for real-world applications to solve challenges like peer discovery, authentication, and providing a persistent state for offline clients to catch up from. The central hub acts as a reliable message relay and persistence layer, while also having the capability to facilitate direct WebRTC connections between peers in the future for enhanced performance.   
+This architecture combines the reliability of a central server with the low-latency potential of peer-to-peer communication. While CRDTs are inherently decentralized, a central hub is crucial for real-world applications to solve challenges like peer discovery, authentication, and providing a persistent state for offline clients to catch up from. The central hub acts as a reliable message relay and persistence layer, while also having the capability to facilitate direct WebRTC connections between peers in the future for enhanced performance.  
 
 6.2. Central Sync Hub API Specification
 The central hub will expose two primary endpoints: a WebSocket for real-time delta synchronization and a REST endpoint for efficient initial state retrieval.
@@ -553,13 +552,13 @@ Real-Time Sync Endpoint:
 
 URL: wss://api.white.ai/v2/graph/subscribe
 
-Protocol: This WebSocket server will implement the standard y-websocket server protocol. Clients will connect to specific "rooms" corresponding to a document or graph ID (e.g., wss://api.white.ai/v2/graph/subscribe/document-uuid-1234). The server will broadcast awareness information (e.g., cursor positions) and document updates (deltas) to all clients connected to the same room.   
+Protocol: This WebSocket server will implement the standard y-websocket server protocol. Clients will connect to specific "rooms" corresponding to a document or graph ID (e.g., wss://api.white.ai/v2/graph/subscribe/document-uuid-1234). The server will broadcast awareness information (e.g., cursor positions) and document updates (deltas) to all clients connected to the same room.  
 
 State Catch-up Endpoint:
 
 URL: GET https://api.white.ai/v2/graph/state?id=<graph_id>
 
-Rationale: For a client connecting for the first time or after being offline for an extended period, replaying a long history of individual deltas is inefficient. This REST endpoint allows the client to fetch a single, compressed snapshot of the document's current state. The client can load this state instantly and then subscribe to the WebSocket for subsequent real-time updates. This significantly improves initial load performance.   
+Rationale: For a client connecting for the first time or after being offline for an extended period, replaying a long history of individual deltas is inefficient. This REST endpoint allows the client to fetch a single, compressed snapshot of the document's current state. The client can load this state instantly and then subscribe to the WebSocket for subsequent real-time updates. This significantly improves initial load performance.  
 
 Delta Protocol:
 
@@ -572,8 +571,8 @@ Part IV: Brand & Design Directives
 This final part provides the essential assets and guidelines for the Strunk.ai content and design team to ensure a consistent and high-quality user experience that reflects the project's core values.
 
 7. Visual Identity & Brand Guidelines
-7.1. Visual Assets
-Logos: All official logos for both White.ai and DeepThought, in both vector (SVG) and raster (PNG) formats, are located in the shared asset library at: ``
+   7.1. Visual Assets
+   Logos: All official logos for both White.ai and DeepThought, in both vector (SVG) and raster (PNG) formats, are located in the shared asset library at: ``
 
 Icons: The website will exclusively use the Feather Icons library. Its minimalist, line-art style aligns perfectly with the clean, technical, and transparent aesthetic of the "Transparent Workshop" theme.
 
@@ -610,7 +609,6 @@ Landing Page: The primary heading font size should be increased by 20% to create
 Whitepaper & Roadmap Pages: All instances of code blocks, API endpoints, or other technical identifiers must be rendered in a monospaced font (e.g., Source Code Pro) to improve readability and distinguish them from narrative text.
 
 Atelier Page: The text input area for the GenUI prompt needs to be significantly larger and more prominent on the page to serve as a clear focal point and invite user interaction. When a prompt is submitted, the loading state must include a subtle but clear animation (e.g., a pulsing glow on the input border) to provide feedback that the AI is processing the request.
-
 
 Sources used in the report
 
