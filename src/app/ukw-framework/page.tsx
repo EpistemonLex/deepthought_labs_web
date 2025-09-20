@@ -1,56 +1,7 @@
+'use client';
 import ReactMarkdown from 'react-markdown';
 import { useState } from 'react';
-
-export default function UKWFramework() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  return (
-    <div className="bg-gray-900 text-white min-h-screen">
-      {/* Header */}
-      <header className="container mx-auto px-6 py-4 flex justify-between items-center border-b border-gray-700 pb-4">
-        <h1 className="text-2xl font-bold">DeepThought Labs</h1>
-        <div className="md:hidden">
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-300 hover:text-white focus:outline-none">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-          </button>
-        </div>
-        <nav className="hidden md:flex space-x-4">
-          <a href="/whitepaper" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Whitepaper</a>
-          <a href="/ukw-framework" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">UKW Framework</a>
-          <a href="/conceptual-seeding" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Conceptual Seeding</a>
-          <a href="/symbiotic-disbelief" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Symbiotic Disbelief</a>
-          <a href="/emergent-application" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Emergent Application</a>
-          <a href="/roadmap" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Roadmap</a>
-          <a href="/atelier" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">The Atelier</a>
-          <a href="/#contact" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Contact</a>
-        </nav>
-        {isMenuOpen && (
-          <div className="md:hidden absolute top-16 left-0 w-full bg-gray-900 border-b border-gray-700 py-4 z-10">
-            <nav className="flex flex-col items-center space-y-2">
-              <a href="/whitepaper" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium">Whitepaper</a>
-              <a href="/ukw-framework" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium">UKW Framework</a>
-              <a href="/roadmap" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium">Roadmap</a>
-              <a href="/atelier" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium">The Atelier</a>
-              <a href="/#contact" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium">Contact</a>
-            </nav>
-          </div>
-        )}
-      </header>
-
-      <main className="container mx-auto px-6 py-8">
-        <article className="prose prose-invert max-w-none">
-          <ReactMarkdown>{markdownContent}</ReactMarkdown>
-        </article>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 py-10 border-t border-gray-700">
-        <div className="container mx-auto px-6 text-center">
-          <p className="text-gray-400">&copy; {new Date().getFullYear()} DeepThought Labs. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
-  );
-}
+import Link from 'next/link';
 
 const markdownContent = `
 # The Universal Knowledge Work Framework: A Strategic Blueprint for Cognitive Augmentation
@@ -98,12 +49,12 @@ However, the framework's claim to "universality," which underpins the market exp
 
 Table 1: A Comparative Analysis of Knowledge Work Models
 
-Framework Name\tPrimary Purpose\tCore Structure\tApplication to Work\tKey Differentiator for DeepThought
-UKW Framework\tTo model the active process of professional knowledge creation and refinement.\tCyclical Process (Deconstruct -> Synthesize -> Compose -> Iterate)\tOperational & Generative: A direct blueprint for performing and augmenting work tasks.\tProvides a native structure for a product designed to support the full, dynamic lifecycle of knowledge work.
-Bloom's Taxonomy\tTo classify educational learning objectives into levels of complexity and specificity.\tHierarchy (Remember -> Understand -> Apply -> Analyze -> Evaluate -> Create)\tEducational & Evaluative: A tool for structuring curricula and assessing cognitive skill levels.\tDescribes levels of cognitive mastery, whereas UKW describes the actions taken to achieve that mastery.
-DIKW Pyramid\tTo model the maturation of data into more valuable forms.\tLinear Progression (Data -> Information -> Knowledge -> Wisdom)\tData Maturation: Describes the contextualization and synthesis of raw data into actionable insight.\tDescribes the states of information assets, whereas UKW describes the cognitive operations performed on those assets.
-Cynefin Framework\tTo provide a diagnostic tool for sense-making and decision-making in different contexts.\tDiagnostic Matrix (Clear, Complicated, Complex, Chaotic)\tSituational Diagnosis: Helps leaders identify the nature of a problem and select an appropriate response strategy.\tA framework for choosing a course of action, whereas UKW is a framework for executing the cognitive work within that course of action.
-Universal Competency Framework (UCF)\tTo provide a comprehensive model of workplace behaviors for HR and talent management.\tRelational Framework (Defines components and their relationships)\tTalent Management: Used to build corporate competency models for hiring and development.\tFocuses on behavioral traits of workers, whereas UKW focuses on the universal cognitive processes of the work itself.
+Framework Name	Primary Purpose	Core Structure	Application to Work	Key Differentiator for DeepThought
+UKW Framework	To model the active process of professional knowledge creation and refinement.	Cyclical Process (Deconstruct -> Synthesize -> Compose -> Iterate)	Operational & Generative: A direct blueprint for performing and augmenting work tasks.	Provides a native structure for a product designed to support the full, dynamic lifecycle of knowledge work.
+Bloom's Taxonomy	To classify educational learning objectives into levels of complexity and specificity.	Hierarchy (Remember -> Understand -> Apply -> Analyze -> Evaluate -> Create)	Educational & Evaluative: A tool for structuring curricula and assessing cognitive skill levels.	Describes levels of cognitive mastery, whereas UKW describes the actions taken to achieve that mastery.
+DIKW Pyramid	To model the maturation of data into more valuable forms.	Linear Progression (Data -> Information -> Knowledge -> Wisdom)	Data Maturation: Describes the contextualization and synthesis of raw data into actionable insight.	Describes the states of information assets, whereas UKW describes the cognitive operations performed on those assets.
+Cynefin Framework	To provide a diagnostic tool for sense-making and decision-making in different contexts.	Diagnostic Matrix (Clear, Complicated, Complex, Chaotic)	Situational Diagnosis: Helps leaders identify the nature of a problem and select an appropriate response strategy.	A framework for choosing a course of action, whereas UKW is a framework for executing the cognitive work within that course of action.
+Universal Competency Framework (UCF)	To provide a comprehensive model of workplace behaviors for HR and talent management.	Relational Framework (Defines components and their relationships)	Talent Management: Used to build corporate competency models for hiring and development.	Focuses on behavioral traits of workers, whereas UKW focuses on the universal cognitive processes of the work itself.
 
 ## II. The Four Pillars of Professional Achievement: A Deep Dive
 
@@ -238,15 +189,15 @@ The process of medical diagnosis is a rigorous application of knowledge work und
 
 Table 2: Mapping Professional Workflows to the UKW Framework
 
-Professional Vertical\tKey Workflow Step\tPrimary UKW Pillar\tCore Cognitive Task\tDeepThought Feature Opportunity
-Financial Analyst\tGather data from 10-Ks, earnings calls, and market reports.\tDeconstruction\tExtracting structured financial data and qualitative statements from unstructured documents.\tAI-powered Financial Data Extractor Block that auto-parses PDFs and transcripts into a structured database.
-Financial Analyst\tAnalyze historical results and benchmark against peers.\tSynthesis\tIdentifying trends, calculating ratios, and comparing performance across multiple companies.\tA Competitive Analysis Canvas that visualizes historical performance metrics and flags significant deviations from industry averages.
-Financial Analyst\tBuild a 3-statement financial model for forecasting.\tComposition\tStructuring assumptions and historical data into a complex, interconnected logical model.\tAn intelligent Financial Modeling Block with dynamic templates linked directly to the synthesis canvas for seamless data flow.
-Financial Analyst\tUpdate board presentation with latest quarterly results.\tIteration\tRefining an existing artifact based on new data and feedback.\tAn Iterative Reporting Block that automatically updates charts in a linked presentation when the source model is changed.
-Medical Doctor\tPatient intake and review of medical history.\tDeconstruction\tIdentifying and structuring relevant symptoms, past conditions, and lab results from patient records.\tAn EHR Integration Block that creates a structured timeline of a patient's medical history, using NLP to tag key events.
-Medical Doctor\tFormulate a differential diagnosis.\tSynthesis\tConnecting symptoms and test results to a body of medical knowledge to generate potential hypotheses.\tA Differential Diagnosis Assistant that suggests possible conditions based on the evidence, ranked by probability, with links to supporting research.
-Medical Doctor\tCreate a formal treatment plan.\tComposition\tOrganizing diagnostic findings and clinical guidelines into a structured, actionable plan for patient care.\tA Treatment Plan Composer with evidence-based templates that are pre-populated with patient data and diagnostic insights.
-Medical Doctor\tMonitor patient outcomes and adjust treatment.\tIteration\tEvaluating the efficacy of a treatment plan over time and making data-driven adjustments.\tA Patient Monitoring Block that tracks outcomes and provides alerts when a plan may require re-evaluation based on new data.
+Professional Vertical	Key Workflow Step	Primary UKW Pillar	Core Cognitive Task	DeepThought Feature Opportunity
+Financial Analyst	Gather data from 10-Ks, earnings calls, and market reports.	Deconstruction	Extracting structured financial data and qualitative statements from unstructured documents.	AI-powered Financial Data Extractor Block that auto-parses PDFs and transcripts into a structured database.
+Financial Analyst	Analyze historical results and benchmark against peers.	Synthesis	Identifying trends, calculating ratios, and comparing performance across multiple companies.	A Competitive Analysis Canvas that visualizes historical performance metrics and flags significant deviations from industry averages.
+Financial Analyst	Build a 3-statement financial model for forecasting.	Composition	Structuring assumptions and historical data into a complex, interconnected logical model.	An intelligent Financial Modeling Block with dynamic templates linked directly to the synthesis canvas for seamless data flow.
+Financial Analyst	Update board presentation with latest quarterly results.	Iteration	Refining an existing artifact based on new data and feedback.	An Iterative Reporting Block that automatically updates charts in a linked presentation when the source model is changed.
+Medical Doctor	Patient intake and review of medical history.	Deconstruction	Identifying and structuring relevant symptoms, past conditions, and lab results from patient records.	An EHR Integration Block that creates a structured timeline of a patient's medical history, using NLP to tag key events.
+Medical Doctor	Formulate a differential diagnosis.	Synthesis	Connecting symptoms and test results to a body of medical knowledge to generate potential hypotheses.	A Differential Diagnosis Assistant that suggests possible conditions based on the evidence, ranked by probability, with links to supporting research.
+Medical Doctor	Create a formal treatment plan.	Composition	Organizing diagnostic findings and clinical guidelines into a structured, actionable plan for patient care.	A Treatment Plan Composer with evidence-based templates that are pre-populated with patient data and diagnostic insights.
+Medical Doctor	Monitor patient outcomes and adjust treatment.	Iteration	Evaluating the efficacy of a treatment plan over time and making data-driven adjustments.	A Patient Monitoring Block that tracks outcomes and provides alerts when a plan may require re-evaluation based on new data.
 
 ## IV. Strategic Implementation: Translating the UKW Framework into Market Leadership
 
@@ -543,3 +494,139 @@ Opens in a new window
 
 cdc.gov
 Diagnosis - Health, United States - CDC
+`;
+
+export default function UKWFramework() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  return (
+    <div className="bg-gray-900 text-white min-h-screen">
+      {/* Header */}
+      <header className="container mx-auto px-6 py-4 flex justify-between items-center border-b border-gray-700 pb-4">
+        <h1 className="text-2xl font-bold">DeepThought Labs</h1>
+        <div className="md:hidden">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="text-gray-300 hover:text-white focus:outline-none"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              ></path>
+            </svg>
+          </button>
+        </div>
+        <nav className="hidden md:flex space-x-4">
+          <Link
+            href="/whitepaper"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Whitepaper
+          </Link>
+          <Link
+            href="/ukw-framework"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            UKW Framework
+          </Link>
+          <Link
+            href="/conceptual-seeding"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Conceptual Seeding
+          </Link>
+          <Link
+            href="/symbiotic-disbelief"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Symbiotic Disbelief
+          </Link>
+          <Link
+            href="/emergent-application"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Emergent Application
+          </Link>
+          <Link
+            href="/roadmap"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Roadmap
+          </Link>
+          <Link
+            href="/atelier"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            The Atelier
+          </Link>
+          <Link
+            href="/#contact"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Contact
+          </Link>
+        </nav>
+        {isMenuOpen && (
+          <div className="md:hidden absolute top-16 left-0 w-full bg-gray-900 border-b border-gray-700 py-4 z-10">
+            <nav className="flex flex-col items-center space-y-2">
+              <Link
+                href="/whitepaper"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+              >
+                Whitepaper
+              </Link>
+              <Link
+                href="/ukw-framework"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+              >
+                UKW Framework
+              </Link>
+              <Link
+                href="/roadmap"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+              >
+                Roadmap
+              </Link>
+              <Link
+                href="/atelier"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+              >
+                The Atelier
+              </Link>
+              <Link
+                href="/#contact"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+              >
+                Contact
+              </Link>
+            </nav>
+          </div>
+        )}
+      </header>
+
+      <main className="container mx-auto px-6 py-8">
+        <article className="prose prose-invert max-w-none">
+          <ReactMarkdown>{markdownContent}</ReactMarkdown>
+        </article>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 py-10 border-t border-gray-700">
+        <div className="container mx-auto px-6 text-center">
+          <p className="text-gray-400">
+            &copy; {new Date().getFullYear()} DeepThought Labs. All rights
+            reserved.
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}

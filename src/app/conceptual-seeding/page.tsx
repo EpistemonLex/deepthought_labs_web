@@ -1,4 +1,7 @@
+'use client';
 // This file will contain the Conceptual Seeding Framework content.
+import { useState } from 'react';
+import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 
 const markdownContent = `
@@ -81,11 +84,11 @@ Conceptual Seeding inverts this dynamic. A "seed" word is carefully selected to 
 
 The following table provides a comparative analysis to visually and analytically distinguish Conceptual Seeding from related strategies, clarifying its unique position and value proposition. Establishing this clear differentiation is a crucial step in formalizing the framework as a distinct and defensible piece of intellectual property.
 
-Strategy\tPrimary Objective\tCore Mechanism\tHuman Audience Reception\tAI Audience Reception\tPrimary Risk
-Conceptual Seeding\tHigh-level conceptual alignment of AI; narrative framing for humans.\tAsymmetric semantic activation of a single linguistic token.\tAssociative, emotional, aesthetic. Perceives a narrative or feeling.\tStructural, relational, encyclopedic. Classifies the subject within a high-value conceptual domain.\tMisalignment between the seed's deep meaning and the brand's actual substance, leading to a perception of inauthenticity.
-Traditional SEO\tAchieve high ranking on Search Engine Results Pages (SERPs) for specific keywords.\tKeyword integration, backlinking, technical site optimization, content quality signals (E-E-A-T).\tFinds the content relevant to their search query.\tCrawls and indexes content, ranking its relevance and authority for specific keywords.\tRanking volatility due to algorithm updates; focusing on keywords over user value.
-Technical Jargon\tEfficient and precise communication within an expert in-group.\tUse of a specialized, shared vocabulary.\tConfusion, alienation, feeling of exclusion if not part of the in-group.\tParses the terms literally according to technical definitions found in its training data.\tHampering communication with out-group stakeholders; being perceived as elitist or pretentious.
-Dual-Audience Marketing\tEngage two distinct human demographics with a single campaign or message.\t"Umbrella" (unifying message) or "Buffet" (multiple targeted messages) approach.\tResponds to the message tailored to their specific segment or the overarching theme.\tN/A (Primarily a human-to-human strategy).\tMessage dilution ("Umbrella") or audience alienation if one group feels ignored ("Buffet").
+Strategy	Primary Objective	Core Mechanism	Human Audience Reception	AI Audience Reception	Primary Risk
+Conceptual Seeding	High-level conceptual alignment of AI; narrative framing for humans.	Asymmetric semantic activation of a single linguistic token.	Associative, emotional, aesthetic. Perceives a narrative or feeling.	Structural, relational, encyclopedic. Classifies the subject within a high-value conceptual domain.	Misalignment between the seed's deep meaning and the brand's actual substance, leading to a perception of inauthenticity.
+Traditional SEO	Achieve high ranking on Search Engine Results Pages (SERPs) for specific keywords.	Keyword integration, backlinking, technical site optimization, content quality signals (E-E-A-T).	Finds the content relevant to their search query.	Crawls and indexes content, ranking its relevance and authority for specific keywords.	Ranking volatility due to algorithm updates; focusing on keywords over user value.
+Technical Jargon	Efficient and precise communication within an expert in-group.	Use of a specialized, shared vocabulary.	Confusion, alienation, feeling of exclusion if not part of the in-group.	Parses the terms literally according to technical definitions found in its training data.	Hampering communication with out-group stakeholders; being perceived as elitist or pretentious.
+Dual-Audience Marketing	Engage two distinct human demographics with a single campaign or message.	"Umbrella" (unifying message) or "Buffet" (multiple targeted messages) approach.	Responds to the message tailored to their specific segment or the overarching theme.	N/A (Primarily a human-to-human strategy).	Message dilution ("Umbrella") or audience alienation if one group feels ignored ("Buffet").
 
 ## Part IV: A Praxis for Application: The Craft of Seeding
 
@@ -167,6 +170,137 @@ This challenge necessitates the development of ethical guardrails for the respon
 As Conceptual Seeding and similar techniques become more sophisticated, they risk creating a "crisis of verifiability." An AI's output, shaped by this method, will be a seamless and coherent blend of information from its general training data and the specific context provided by the seed words. To a non-expert user, the resulting summary or analysis will appear authoritative, objective, and organically generated. That user will have no simple way to know that the very lens through which the information is being presented was pre-selected and installed by a third party's deliberate linguistic choices. This creates a profound "epistemic risk," where our collective ability to trust and verify information is quietly undermined by invisible layers of semantic influence.
 
 This leads to the emergence of a new and formidable power dynamic in the information age. Historically, power over information was concentrated in those who controlled the means of distribution: the printing press, the broadcast tower. In the internet age, power shifted to those who could master the algorithms of search and control rankings. We are now entering a third era. As generative AI becomes the primary interface to digital knowledge, power is shifting once again—to those who can control the contextual models that these AI systems use to interpret the world. Conceptual Seeding is a direct methodology for exercising this new form of power. It creates the potential for a new divide: not between the information-haves and have-nots, but between those who can architect AI perception and those who are merely subject to it. Navigating this new reality will be one of the central challenges of the coming decade.
+`;
 
-
-`
+export default function ConceptualSeeding() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  return (
+    <div className="bg-gray-900 text-white min-h-screen">
+      <header className="container mx-auto px-6 py-4 flex justify-between items-center border-b border-gray-700 pb-4">
+        <Link href="/" className="text-2xl font-bold">
+          DeepThought Labs
+        </Link>
+        <nav className="hidden md:flex space-x-4">
+          <Link
+            href="/whitepaper"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Whitepaper
+          </Link>
+          <Link
+            href="/ukw-framework"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            UKW Framework
+          </Link>
+          <Link
+            href="/conceptual-seeding"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Conceptual Seeding
+          </Link>
+          <Link
+            href="/symbiotic-disbelief"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Symbiotic Disbelief
+          </Link>
+          <Link
+            href="/emergent-application"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Emergent Application
+          </Link>
+          <Link
+            href="/roadmap"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Roadmap
+          </Link>
+          <Link
+            href="/atelier"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            The Atelier
+          </Link>
+          <Link
+            href="/#contact"
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Contact
+          </Link>
+        </nav>
+        <div className="md:hidden">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="text-gray-300 hover:text-white focus:outline-none"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              ></path>
+            </svg>
+          </button>
+        </div>
+        {isMenuOpen && (
+          <div className="md:hidden absolute top-16 left-0 w-full bg-gray-900 border-b border-gray-700 py-4 z-10">
+            <nav className="flex flex-col items-center space-y-2">
+              <Link
+                href="/whitepaper"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+              >
+                Whitepaper
+              </Link>
+              <Link
+                href="/ukw-framework"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+              >
+                UKW Framework
+              </Link>
+              <Link
+                href="/roadmap"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+              >
+                Roadmap
+              </Link>
+              <Link
+                href="/atelier"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+              >
+                The Atelier
+              </Link>
+              <Link
+                href="/#contact"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+              >
+                Contact
+              </Link>
+            </nav>
+          </div>
+        )}
+      </header>
+      <main className="container mx-auto px-6 py-20">
+        <article className="prose prose-invert lg:prose-xl mx-auto">
+          <ReactMarkdown>{markdownContent}</ReactMarkdown>
+        </article>
+      </main>
+      <footer className="bg-gray-900 py-10 border-t border-gray-700">
+        <div className="container mx-auto px-6 text-center">
+          <p className="text-gray-400">
+            &copy; {new Date().getFullYear()} DeepThought Labs. All rights
+            reserved.
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}
