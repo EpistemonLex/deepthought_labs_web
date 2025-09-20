@@ -1,6 +1,6 @@
 'use client';
 import ReactMarkdown from 'react-markdown';
-import Header from '../../components/Header';
+import Header from '../../../components/Header';
 
 const markdownContent = `
 # Journal: How Acme Corp Accelerated Research with DeepThought

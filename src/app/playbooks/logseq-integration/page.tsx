@@ -1,6 +1,6 @@
 'use client';
 import ReactMarkdown from 'react-markdown';
-import Header from '../../components/Header';
+import Header from '../../../components/Header';
 
 const markdownContent = `
 # Playbook: Integrating DeepThought with Logseq

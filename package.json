@@ -10,11 +10,10 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest",
-    "test:watch": "vitest --watch",
-    "test:e2e": "playwright test",
-    "verify": "npm run lint && npm run build && npm run test",
-    "prepare": "husky"
+    "test": "npx vitest --config=vitest.config.mjs",
+    "test:watch": "npx vitest --config=vitest.config.mjs --watch",
+    "test:e2e": "playwright test --config=tests/playwright.config.mjs",
+    "verify": "npm run lint && npm run build && npm run test"
   },
   "dependencies": {
     "next": "15.5.3",

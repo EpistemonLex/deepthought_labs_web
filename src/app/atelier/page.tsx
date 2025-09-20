@@ -2,6 +2,7 @@
 // This file will contain the interactive GenUI demo for The Atelier.
 import { useState } from 'react';
 import { generateUI, ApiError } from '../../lib/api';
+import Header from '../../components/Header';
 
 export default function Atelier() {
   const [prompt, setPrompt] = useState('');
