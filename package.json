@@ -16,10 +16,12 @@
     "verify": "npm run lint && npm run build && npm run test"
   },
   "dependencies": {
+    "@types/sanitize-html": "^2.16.0",
     "next": "15.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-markdown": "^10.1.0"
+    "react-markdown": "^10.1.0",
+    "sanitize-html": "^2.17.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
