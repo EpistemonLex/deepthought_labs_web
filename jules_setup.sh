@@ -7,7 +7,7 @@ set -e
 echo "Installing all project dependencies..."
 npm install
 
-echo "Running a production build to verify..."
-npm run build
+echo "Running full verification (lint, build, test)..."
+npm run verify
 
 echo "Jules environment setup and verification complete."
