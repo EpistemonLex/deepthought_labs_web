@@ -2,6 +2,7 @@
 // This file will contain the interactive GenUI demo for The Atelier.
 import { useState } from 'react';
 import Link from 'next/link';
+import { generateUI } from '../../lib/api';
 
 export default function Atelier() {
   const [prompt, setPrompt] = useState('');
@@ -15,35 +16,14 @@ export default function Atelier() {
     setError(null); // Clear previous error
 
     try {
-      const response = await fetch('https://api.white.ai/v1/genui', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Placeholder for authentication. Token needs to be securely provided.
-          // 'Authorization': 'Bearer YOUR_SECRET_TOKEN',
-        },
-        body: JSON.stringify({
-          prompt,
-          constraints: { framework: 'react', style_guide: 'tailwind_css_v3' },
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        // Handle API errors based on the specified error schema
-        setError(data.error?.message || 'An unknown error occurred.');
-        return;
-      }
-
-      // Decode Base64 UI component
-      const decodedUI = atob(data.ui_component);
+      const decodedUI = await generateUI(prompt);
       setGeneratedUI(decodedUI);
-    } catch (err) {
-      console.error('Error generating UI:', err);
-      setError(
-        'Failed to connect to the UI generation service. Please check your network or try again later.',
-      );
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +69,7 @@ export default function Atelier() {
         </nav>
       </header>
       <main className="container mx-auto px-6 py-20 text-center">
-        <h2 className="text-5xl font-extrabold">
+        <h2 className="text-6xl font-extrabold">
           The Atelier: The Workbench for Agentic AI
         </h2>
         <p className="mt-4 text-xl text-gray-400">
@@ -99,15 +79,17 @@ export default function Atelier() {
 
         <div className="mt-10 flex flex-col items-center">
           <textarea
-            className="w-full max-w-2xl p-4 text-lg rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            rows={5}
+            className={`w-full max-w-3xl p-4 text-lg rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              isLoading ? 'ring-2 ring-offset-2 ring-[#007AFF] animate-pulse' : ''
+            }`}
+            rows={8}
             placeholder="Describe the UI you want to generate, e.g., 'A user profile card with an avatar, name, and a follow button.'"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             disabled={isLoading}
           ></textarea>
           <button
-            className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-6 bg-[#007AFF] hover:bg-[#0056b3] text-white font-bold py-3 px-8 rounded-full text-lg disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleGenerateUI}
             disabled={isLoading}
           >
