@@ -1,10 +1,9 @@
-'use client';
-import ReactMarkdown from 'react-markdown';
-import Header from '../../components/Header';
-
-const markdownContent = `
-# The Principle of Symbiotic Disbelief
-
+---
+title: "The Principle of Symbiotic Disbelief"
+slug: "symbiotic-disbelief"
+author: "DeepThought Labs"
+date_published: "2025-10-01"
+---
 In the pursuit of Artificial General Intelligence, the prevailing narrative has been one of ascension—a journey toward a machine intelligence so complete that human oversight becomes obsolete. This vision, while compelling in science fiction, is a dangerous fallacy in the practical construction of agentic systems. It presupposes a future of blind trust, where human agency is abdicated in favor of algorithmic omniscience. We propose a more robust, sustainable, and ultimately more powerful paradigm: The Principle of Symbiotic Disbelief.
 
 This principle is not born of Luddism or fear, but of a profound respect for the distinct capabilities of both human and machine cognition. It posits that the most effective human-AI symbiosis is not one of faith, but one of constructive, perpetual skepticism. The user must not be a passive consumer of AI-generated output; they must be an active, critical participant in a collaborative process.
@@ -30,25 +29,3 @@ This requires a fundamental shift in interface and system design. We must move a
 Adopting this principle has profound implications for how we build agentic systems. It prioritizes transparency over mystique, control over automation, and collaboration over delegation. It means that the elegance of a system is measured not by how much it hides from the user, but by how effectively it reveals its own mechanics.
 
 The path to truly powerful AI is not through the creation of an infallible digital god, but through the forging of a tool that augments human intellect without usurping it. It is a partnership where the human provides the wisdom of skepticism, and the AI provides the power of scale. This is Symbiotic Disbelief: a foundation for a future where technology empowers, rather than eclipses, humanity.
-`;
-
-export default function SymbioticDisbelief() {
-  return (
-    <div className="bg-gray-900 text-white min-h-screen">
-      <Header />
-      <main className="container mx-auto px-6 py-20">
-        <article className="prose prose-invert lg:prose-xl mx-auto">
-          <ReactMarkdown>{markdownContent}</ReactMarkdown>
-        </article>
-      </main>
-      <footer className="bg-gray-900 py-10">
-        <div className="container mx-auto px-6 text-center">
-          <p className="text-gray-400">
-            &copy; {new Date().getFullYear()} DeepThought Labs. All rights
-            reserved.
-          </p>
-        </div>
-      </footer>
-    </div>
-  );
-}

@@ -1,10 +1,9 @@
-'use client';
-import ReactMarkdown from 'react-markdown';
-import Header from '../../components/Header';
-
-const markdownContent = `
-# The Emergent Application: An Architecture for Agentic Systems
-
+---
+title: "The Emergent Application: An Architecture for Agentic Systems"
+slug: "emergent-application"
+author: "DeepThought Labs"
+date_published: "2025-10-01"
+---
 For decades, the paradigm of software development has been fundamentally monolithic and feature-driven. We design applications as centralized, coherent artifacts, where developers explicitly code every feature, define every workflow, and anticipate every user interaction. This approach has brought us far, but it is reaching its limits in an era of hyper-personalization and artificial intelligence. The future does not lie in building bigger, more complex monoliths; it lies in cultivating ecosystems from which intelligent behavior can emerge. We call this new paradigm the Emergent Application.
 
 An Emergent Application is not a single program but a dynamic, decentralized system composed of three core primitives: Sovereign Agents, a Shared State Fabric, and a Protocol for Interaction. Complex, personalized application experiences are not explicitly coded but arise from the real-time collaboration of these components, orchestrated by the user's intent.
@@ -36,25 +35,3 @@ The "application logic" itself becomes a collection of specialized AI agents—s
 In this architecture, the application as we know it disappears. It is replaced by a fluid, user-directed experience. A user might start with a blank note (a CRDT object), invite a colleague (another Sovereign Agent), and then grant access to a research AI (a specialized agent). The resulting interaction—a collaborative research and writing session—was not a pre-programmed "feature." It emerged from the interaction of the core primitives.
 
 This is a profound shift. It moves us from building rigid, closed systems to cultivating open, generative ecosystems. It is an architecture that is inherently more resilient, more private, and more aligned with user agency. It is the necessary foundation for a future of truly personal and agentic computing.
-`;
-
-export default function EmergentApplication() {
-  return (
-    <div className="bg-gray-900 text-white min-h-screen">
-      <Header />
-      <main className="container mx-auto px-6 py-20">
-        <article className="prose prose-invert lg:prose-xl mx-auto">
-          <ReactMarkdown>{markdownContent}</ReactMarkdown>
-        </article>
-      </main>
-      <footer className="bg-gray-900 py-10">
-        <div className="container mx-auto px-6 text-center">
-          <p className="text-gray-400">
-            &copy; {new Date().getFullYear()} DeepThought Labs. All rights
-            reserved.
-          </p>
-        </div>
-      </footer>
-    </div>
-  );
-}
