@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ApiError, generateUI } from './api';
 
 // Mock the global fetch function
@@ -7,7 +7,7 @@ global.fetch = vi.fn();
 describe('api.ts', () => {
   beforeEach(() => {
     // Reset the fetch mock before each test
-    vi.resetAllMocks();
+    vi.clearAllMocks();
     // Reset the environment variables
     delete process.env.NEXT_PUBLIC_GENUI_API_TOKEN;
   });
@@ -34,7 +34,7 @@ describe('api.ts', () => {
         ok: true,
         json: () => Promise.resolve({ ui_component: btoa('<div>Hello</div>') }),
       };
-      (fetch as any).mockResolvedValue(mockResponse);
+      (fetch as vi.Mock).mockResolvedValue(mockResponse);
 
       const ui = await generateUI('test prompt');
       expect(ui).toBe('<div>Hello</div>');
@@ -59,7 +59,7 @@ describe('api.ts', () => {
         statusText: 'Internal Server Error',
         json: () => Promise.resolve({ error: { message: 'Internal Server Error' } }),
       };
-      (fetch as any).mockResolvedValue(mockResponse);
+      (fetch as vi.Mock).mockResolvedValue(mockResponse);
 
       await expect(generateUI('test prompt')).rejects.toThrow(
         new ApiError('Internal Server Error', 500)
@@ -72,7 +72,7 @@ describe('api.ts', () => {
         ok: true,
         json: () => Promise.resolve({}),
       };
-      (fetch as any).mockResolvedValue(mockResponse);
+      (fetch as vi.Mock).mockResolvedValue(mockResponse);
 
       await expect(generateUI('test prompt')).rejects.toThrow(
         new ApiError('The API response did not include a UI component.', 500)

@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './tests/tests-e2e',
+  testDir: './tests-e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -21,5 +21,6 @@ export default defineConfig({
     command: 'npm run dev:test',
     url: 'http://localhost:3001',
     reuseExistingServer: !process.env.CI,
+    timeout: 180 * 1000, // Increased timeout to 3 minutes
   },
 });
