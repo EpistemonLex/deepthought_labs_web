@@ -1,8 +1,7 @@
 'use client';
 // This file will contain the interactive GenUI demo for The Atelier.
 import { useState } from 'react';
-import Link from 'next/link';
-import { generateUI } from '../../lib/api';
+import { generateUI, ApiError } from '../../lib/api';
 
 export default function Atelier() {
   const [prompt, setPrompt] = useState('');
@@ -11,6 +10,10 @@ export default function Atelier() {
   const [error, setError] = useState<string | null>(null);
 
   const handleGenerateUI = async () => {
+    if (!prompt.trim()) {
+      setError('Please enter a description for the UI you want to generate.');
+      return;
+    }
     setIsLoading(true);
     setGeneratedUI(''); // Clear previous UI
     setError(null); // Clear previous error
@@ -19,8 +22,36 @@ export default function Atelier() {
       const decodedUI = await generateUI(prompt);
       setGeneratedUI(decodedUI);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
+      if (err instanceof ApiError) {
+        // Use a switch to handle specific API error statuses
+        // The messages are taken directly from the 'Transparent.md' blueprint
+        switch (err.status) {
+          case 400:
+            setError(
+              `Bad Request: ${err.message}. Please check your input.`,
+            );
+            break;
+          case 401:
+            setError(
+              `Authentication Error: ${err.message}. Please contact the administrator.`,
+            );
+            break;
+          case 429:
+            setError(
+              `Rate Limit Exceeded: ${err.message}. Please wait before trying again.`,
+            );
+            break;
+          case 503:
+            setError(
+              `Service Unavailable: ${err.message}. The AI service may be temporarily down.`,
+            );
+            break;
+          default:
+            setError(`An API error occurred: ${err.message}`);
+            break;
+        }
+      } else if (err instanceof Error) {
+        setError(`An unexpected error occurred: ${err.message}`);
       } else {
         setError('An unknown error occurred.');
       }
@@ -31,43 +62,7 @@ export default function Atelier() {
 
   return (
     <div className="bg-gray-900 text-white min-h-screen">
-      <header className="container mx-auto px-6 py-4 flex justify-between items-center border-b border-gray-700 pb-4">
-        <Link href="/" className="text-2xl font-bold">
-          DeepThought Labs
-        </Link>
-        <nav>
-          <Link
-            href="/whitepaper"
-            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-          >
-            Whitepaper
-          </Link>
-          <Link
-            href="/ukw-framework"
-            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-          >
-            UKW Framework
-          </Link>
-          <Link
-            href="/roadmap"
-            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-          >
-            Roadmap
-          </Link>
-          <Link
-            href="/atelier"
-            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-          >
-            The Atelier
-          </Link>
-          <Link
-            href="/#contact"
-            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-          >
-            Contact
-          </Link>
-        </nav>
-      </header>
+      <Header />
       <main className="container mx-auto px-6 py-20 text-center">
         <h2 className="text-6xl font-extrabold">
           The Atelier: The Workbench for Agentic AI
@@ -82,7 +77,7 @@ export default function Atelier() {
             className={`w-full max-w-3xl p-4 text-lg rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               isLoading ? 'ring-2 ring-offset-2 ring-[#007AFF] animate-pulse' : ''
             }`}
-            rows={8}
+            rows={12}
             placeholder="Describe the UI you want to generate, e.g., 'A user profile card with an avatar, name, and a follow button.'"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
@@ -91,15 +86,16 @@ export default function Atelier() {
           <button
             className="mt-6 bg-[#007AFF] hover:bg-[#0056b3] text-white font-bold py-3 px-8 rounded-full text-lg disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleGenerateUI}
-            disabled={isLoading}
+            disabled={isLoading || !prompt.trim()}
           >
             {isLoading ? 'Generating...' : 'Generate UI'}
           </button>
         </div>
 
         {error && (
-          <div className="mt-8 p-4 bg-red-900 text-red-200 rounded-lg max-w-2xl mx-auto">
-            <p>{error}</p>
+          <div className="mt-8 p-4 bg-red-900 text-red-200 rounded-lg max-w-3xl mx-auto">
+            <p className="font-semibold">Error</p>
+            <p className="mt-1">{error}</p>
           </div>
         )}
 

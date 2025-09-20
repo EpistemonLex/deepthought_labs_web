@@ -9,6 +9,18 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-inter)'],
+        body: ['var(--font-source-sans)'],
+        mono: ['var(--font-source-code-pro)'],
+      },
+      colors: {
+        brand: {
+          white: '#FFFFFF',
+          black: '#1a1a1a',
+          blue: '#007AFF',
+        },
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':

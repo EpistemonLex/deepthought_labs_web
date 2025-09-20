@@ -20,10 +20,10 @@ test.describe('Responsive Navigation', () => {
       await page.setViewportSize({ width: 375, height: 667 });
 
       // Click the hamburger menu button
-      await page.locator('.md\\:hidden button').click();
+      await page.locator('.sm\\:hidden button').click();
 
       // Verify that the mobile navigation menu is visible
-      const nav = page.locator('.md\\:hidden nav');
+      const nav = page.locator('header nav');
       await expect(nav).toBeVisible();
 
       // Click a link in the mobile navigation menu
