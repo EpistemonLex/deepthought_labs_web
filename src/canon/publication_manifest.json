@@ -22,5 +22,13 @@
     "markdown_file": "Unsorted_Docs/Emergent_Application.md",
     "podcast_file": "",
     "abstract": "An Emergent Application is not a single program but a dynamic, decentralized system composed of three core primitives: Sovereign Agents, a Shared State Fabric, and a Protocol for Interaction. Complex, personalized application experiences are not explicitly coded but arise from the real-time collaboration of these components, orchestrated by the user's intent.\n"
+  },
+  {
+    "title": "The DeepThought Paradigm",
+    "category": "Philosophy",
+    "slug": "the-deepthought-paradigm",
+    "markdown_file": "0_canon/The_DeepThought_Paradigm.md",
+    "podcast_file": "",
+    "abstract": "The DeepThought Paradigm represents a fundamental shift in how we conceive, design, and interact with intelligent systems. It moves beyond the traditional, monolithic application model towards an emergent, decentralized, and user-sovereign ecosystem."
   }
 ]
