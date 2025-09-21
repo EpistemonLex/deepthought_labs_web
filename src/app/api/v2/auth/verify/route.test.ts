@@ -1,15 +1,11 @@
 import { POST } from './route';
 import { NextRequest } from 'next/server';
 import jwt from 'jsonwebtoken';
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import crypto from 'crypto';
 
 // --- Test Constants ---
 const JWT_TEST_SECRET = 'a-very-secure-and-long-secret-key-for-testing-purposes-only-do-not-use-in-production';
-const MOCK_VALID_KEY = '-----BEGIN PUBLIC KEY-----\nMOCK_VALID_KEY\n-----END PUBLIC KEY-----';
-const MOCK_INVALID_KEY = '-----BEGIN PUBLIC KEY-----\nINVALID_KEY\n-----END PUBLIC KEY-----';
-const MOCK_VALID_SIGNATURE = 'MOCK_VALID_SIGNATURE_BASE64';
-const MOCK_INVALID_SIGNATURE = 'INVALID_SIGNATURE_BASE64';
-const MOCK_CHALLENGE = 'a-random-nonce-string';
 
 // --- Helper Functions ---
 const mockRequest = (body: object): NextRequest => {
@@ -33,9 +29,9 @@ const mockInvalidRequest = (body: string): NextRequest => {
   };
 
 const validBody = {
-  public_key: MOCK_VALID_KEY,
-  challenge: MOCK_CHALLENGE,
-  signature: MOCK_VALID_SIGNATURE,
+  public_key: 'test-public-key',
+  challenge: 'test-challenge',
+  signature: 'test-signature',
 };
 
 // --- Test Suite ---
@@ -52,6 +48,11 @@ describe('API - /api/v2/auth/verify', () => {
 
   // Test Success Case
   it('should return 200 OK and a valid JWT for a successful verification', async () => {
+    vi.spyOn(crypto, 'createVerify').mockReturnValue({
+      update: vi.fn(),
+      end: vi.fn(),
+      verify: vi.fn().mockReturnValue(true),
+    } as any);
     const req = mockRequest(validBody);
     const res = await POST(req);
     const data = await res.json();
@@ -70,7 +71,12 @@ describe('API - /api/v2/auth/verify', () => {
 
   // Test Failure Cases
   it('should return 401 Unauthorized for an invalid signature', async () => {
-    const req = mockRequest({ ...validBody, signature: MOCK_INVALID_SIGNATURE });
+    vi.spyOn(crypto, 'createVerify').mockReturnValue({
+      update: vi.fn(),
+      end: vi.fn(),
+      verify: vi.fn().mockReturnValue(false),
+    } as any);
+    const req = mockRequest({ ...validBody, signature: 'invalid-signature' });
     const res = await POST(req);
     const data = await res.json();
 
@@ -80,7 +86,12 @@ describe('API - /api/v2/auth/verify', () => {
   });
 
   it('should return 401 Unauthorized for an invalid public key', async () => {
-    const req = mockRequest({ ...validBody, public_key: MOCK_INVALID_KEY });
+    vi.spyOn(crypto, 'createVerify').mockReturnValue({
+      update: vi.fn(),
+      end: vi.fn(),
+      verify: vi.fn().mockReturnValue(false),
+    } as any);
+    const req = mockRequest({ ...validBody, public_key: 'invalid-public-key' });
     const res = await POST(req);
     const data = await res.json();
 
@@ -135,6 +146,11 @@ describe('API - /api/v2/auth/verify', () => {
 
   // Test Server Configuration Error
   it('should return 500 Internal Server Error if JWT secret is not configured', async () => {
+    vi.spyOn(crypto, 'createVerify').mockReturnValue({
+      update: vi.fn(),
+      end: vi.fn(),
+      verify: vi.fn().mockReturnValue(true),
+    } as any);
     delete process.env.JWT_SESSION_SECRET; // Temporarily remove the secret
 
     const req = mockRequest(validBody);

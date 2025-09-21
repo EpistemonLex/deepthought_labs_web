@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,8 +17,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Mock verification logic as per the task requirements
-    const isVerified = public_key.includes('MOCK_VALID_KEY') && signature.includes('MOCK_VALID_SIGNATURE');
+    // Real verification logic
+    const verify = crypto.createVerify('sha512');
+    verify.update(challenge);
+    verify.end();
+    const isVerified = verify.verify(public_key, signature, 'base64');
 
     if (isVerified) {
       const jwtSecret = process.env.JWT_SESSION_SECRET;
