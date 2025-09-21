@@ -1,13 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import LicenseValidator from './LicenseValidator';
-import * as api from '../lib/api';
+import * as sovereign from '@/lib/api/sovereign';
+import { ApiError } from '@/lib/api';
 
-// Mock the api module
-vi.mock('../lib/api', async () => {
-  const actual = await vi.importActual('../lib/api');
+// Mock the sovereign module
+vi.mock('@/lib/api/sovereign', async () => {
   return {
-    ...actual,
     validateLicense: vi.fn(),
   };
 });
@@ -36,7 +35,7 @@ describe('LicenseValidator', () => {
   });
 
   it('shows loading state and calls the API on submit', async () => {
-    const validateLicenseSpy = vi.spyOn(api, 'validateLicense');
+    const validateLicenseSpy = vi.spyOn(sovereign, 'validateLicense');
     render(<LicenseValidator />);
 
     fireEvent.change(screen.getByLabelText(/license key/i), { target: { value: 'test-key' } });
@@ -57,7 +56,7 @@ describe('LicenseValidator', () => {
       tier: 'Pro',
       expires_at: '2025-12-31T23:59:59Z',
     };
-    (api.validateLicense as vi.Mock).mockResolvedValue(mockResponse);
+    (sovereign.validateLicense as vi.Mock).mockResolvedValue(mockResponse);
 
     render(<LicenseValidator />);
 
@@ -73,8 +72,8 @@ describe('LicenseValidator', () => {
   });
 
   it('displays an error message when validation fails', async () => {
-    const mockError = new api.ApiError('Invalid license key.', 404);
-    (api.validateLicense as vi.Mock).mockRejectedValue(mockError);
+    const mockError = new ApiError('Invalid license key.', 404);
+    (sovereign.validateLicense as vi.Mock).mockRejectedValue(mockError);
 
     render(<LicenseValidator />);
 

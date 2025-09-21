@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { requestDownload, DownloadRequestResponse, ApiError } from '../lib/api';
+import { requestDownload, DownloadRequestResponse } from '@/lib/api/sovereign';
+import { ApiError } from '@/lib/api';
 
 // Re-using the same base URL from api.ts for constructing the download link
 const SOVEREIGN_API_BASE_URL = process.env.NEXT_PUBLIC_SOVEREIGN_API_URL || 'http://localhost:8000/api/v1';
