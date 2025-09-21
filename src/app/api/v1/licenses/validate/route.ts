@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withApiKeyAuth } from '@/lib/api_auth';
+import { findLicense } from '@/lib/database';
 
 async function handler(req: NextRequest) {
   try {
@@ -25,23 +26,37 @@ async function handler(req: NextRequest) {
     // - Retention Policy: Data would be retained only for the license
     //   duration + 180 days for recovery purposes.
 
-    // Mock validation logic
-    if (license_key.startsWith('DTL-VALID-')) {
-      const response = {
-        status: 'valid',
-        license_key: license_key,
-        tier: 'pro',
-        expires_at: '2026-10-01T00:00:00Z',
-      };
-      return NextResponse.json(response, { status: 200 });
-    } else {
-      const response = {
-        status: 'invalid',
-        reason_code: 'not_found',
-        message: 'The provided license key is not valid.',
-      };
-      return NextResponse.json(response, { status: 403 });
+    const license = findLicense(license_key);
+
+    if (!license) {
+      return NextResponse.json(
+        {
+          status: 'invalid',
+          reason_code: 'not_found',
+          message: 'The provided license key does not exist.',
+        },
+        { status: 404 }
+      );
     }
+
+    if (license.status !== 'active') {
+      return NextResponse.json(
+        {
+          status: 'invalid',
+          reason_code: license.status,
+          message: `The provided license key is ${license.status}.`,
+        },
+        { status: 403 }
+      );
+    }
+
+    const response = {
+      status: 'valid',
+      license_key: license.key,
+      tier: license.tier,
+      expires_at: license.expires_at,
+    };
+    return NextResponse.json(response, { status: 200 });
   } catch (error) {
     if (error instanceof SyntaxError) {
       return NextResponse.json(
