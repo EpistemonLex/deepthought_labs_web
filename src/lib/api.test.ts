@@ -1,10 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ApiError, generateUI, validateLicense, requestDownload } from './api';
+import { ApiError } from './api';
+import { generateUI } from './api/genui';
+import { validateLicense, requestDownload } from './api/sovereign';
 
 // Mock the global fetch function
 global.fetch = vi.fn();
 
-describe('api.ts', () => {
+describe('api modules', () => {
   beforeEach(() => {
     // Reset the fetch mock before each test
     vi.clearAllMocks();

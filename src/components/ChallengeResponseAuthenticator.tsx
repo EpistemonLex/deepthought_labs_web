@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { verifySignature, ApiError } from '../lib/api';
+import { verifySignature } from '@/lib/api/sovereign';
+import { ApiError } from '@/lib/api';
 
 export default function ChallengeResponseAuthenticator() {
   const [status, setStatus] = useState('Idle');

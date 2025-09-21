@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { validateLicense, LicenseValidationResponse, ApiError } from '../lib/api';
+import { validateLicense, LicenseValidationResponse } from '@/lib/api/sovereign';
+import { ApiError } from '@/lib/api';
 
 export default function LicenseValidator() {
   const [licenseKey, setLicenseKey] = useState('');

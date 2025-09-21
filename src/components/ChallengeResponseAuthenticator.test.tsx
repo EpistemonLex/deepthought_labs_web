@@ -1,18 +1,17 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ChallengeResponseAuthenticator from './ChallengeResponseAuthenticator';
-import * as api from '../lib/api';
+import * as sovereign from '@/lib/api/sovereign';
+import { ApiError } from '@/lib/api';
 import { expect } from 'vitest';
 
-// Mock the api module
-vi.mock('../lib/api', async () => {
-    const actual = await vi.importActual('../lib/api');
+// Mock the sovereign module
+vi.mock('@/lib/api/sovereign', async () => {
     return {
-        ...actual,
         verifySignature: vi.fn(),
     };
 });
 
-const mockedVerifySignature = api.verifySignature as vi.Mock;
+const mockedVerifySignature = sovereign.verifySignature as vi.Mock;
 
 describe('ChallengeResponseAuthenticator', () => {
   beforeEach(() => {
@@ -48,7 +47,7 @@ describe('ChallengeResponseAuthenticator', () => {
   });
 
   it('shows an error message on failed login', async () => {
-    mockedVerifySignature.mockRejectedValue(new api.ApiError('Invalid signature', 400));
+    mockedVerifySignature.mockRejectedValue(new ApiError('Invalid signature', 400));
 
     render(<ChallengeResponseAuthenticator />);
     fireEvent.click(screen.getByText('Login with DeepThought'));

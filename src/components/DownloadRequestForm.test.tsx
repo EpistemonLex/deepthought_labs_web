@@ -1,13 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import DownloadRequestForm from './DownloadRequestForm';
-import * as api from '../lib/api';
+import * as sovereign from '@/lib/api/sovereign';
+import { ApiError } from '@/lib/api';
 
-// Mock the api module
-vi.mock('../lib/api', async () => {
-  const actual = await vi.importActual('../lib/api');
+// Mock the sovereign module
+vi.mock('@/lib/api/sovereign', async () => {
   return {
-    ...actual,
     requestDownload: vi.fn(),
   };
 });
@@ -32,7 +31,7 @@ describe('DownloadRequestForm', () => {
   });
 
   it('shows loading state and calls the API on submit', async () => {
-    const requestDownloadSpy = vi.spyOn(api, 'requestDownload');
+    const requestDownloadSpy = vi.spyOn(sovereign, 'requestDownload');
     render(<DownloadRequestForm />);
 
     fireEvent.change(screen.getByLabelText(/license key/i), { target: { value: 'test-key' } });
@@ -56,7 +55,7 @@ describe('DownloadRequestForm', () => {
       file_name: 'deepthought-v1.0-windows.zip',
       file_size: 12345678,
     };
-    (api.requestDownload as vi.Mock).mockResolvedValue(mockResponse);
+    (sovereign.requestDownload as vi.Mock).mockResolvedValue(mockResponse);
 
     render(<DownloadRequestForm />);
 
@@ -78,8 +77,8 @@ describe('DownloadRequestForm', () => {
   });
 
   it('displays an error message when the request fails', async () => {
-    const mockError = new api.ApiError('This license is not eligible for downloads.', 403);
-    (api.requestDownload as vi.Mock).mockRejectedValue(mockError);
+    const mockError = new ApiError('This license is not eligible for downloads.', 403);
+    (sovereign.requestDownload as vi.Mock).mockRejectedValue(mockError);
 
     render(<DownloadRequestForm />);
 
