@@ -21,7 +21,7 @@ vi.mock('sanitize-html', () => {
 describe('/api/genui POST', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.GENUI_API_TOKEN = 'test-token';
+    process.env.GENUI_API_TOKEN = 'wht-live-sk-7b3d9a8f-c1e0-4f6a-8d2b-5c9e1a4g0h2i';
     process.env.CLOUDFLARE_ACCOUNT_ID = 'test-account-id';
     process.env.CLOUDFLARE_API_TOKEN = 'test-cf-token';
   });
@@ -126,5 +126,22 @@ describe('/api/genui POST', () => {
 
     expect(response.status).toBe(500);
     expect(json.error.code).toBe('internal_server_error');
+  });
+
+  it('should return 429 when rate limit is exceeded', async () => {
+    // This is a simplified simulation. In a real-world scenario,
+    // the rate limiting would be handled by a middleware or gateway.
+    (fetch as vi.Mock).mockResolvedValue(new Response(
+      JSON.stringify({ error: { code: 'rate_limit_exceeded', message: 'Too Many Requests' } }),
+      { status: 429 }
+    ));
+
+    const request = createMockRequest({ prompt: 'A simple div' });
+    const response = await POST(request);
+    const json = await response.json();
+
+    // We expect the error to be passed through from the downstream service.
+    expect(response.status).toBe(429);
+    expect(json.error.code).toBe('rate_limit_exceeded');
   });
 });
