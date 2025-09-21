@@ -1,0 +1,60 @@
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import ChallengeResponseAuthenticator from './ChallengeResponseAuthenticator';
+import * as api from '../lib/api';
+import { expect } from 'vitest';
+
+// Mock the api module
+vi.mock('../lib/api', async () => {
+    const actual = await vi.importActual('../lib/api');
+    return {
+        ...actual,
+        verifySignature: vi.fn(),
+    };
+});
+
+const mockedVerifySignature = api.verifySignature as vi.Mock;
+
+describe('ChallengeResponseAuthenticator', () => {
+  beforeEach(() => {
+    mockedVerifySignature.mockClear();
+  });
+
+  it('renders the login button', () => {
+    render(<ChallengeResponseAuthenticator />);
+    expect(screen.getByText('Login with DeepThought')).toBeInTheDocument();
+  });
+
+  it('shows loading states and success message on successful login', async () => {
+    mockedVerifySignature.mockImplementation(async () => {
+      // Add a small delay to allow the 'Verifying signature...' state to render
+      await new Promise(resolve => setTimeout(resolve, 10));
+      return { session_token: 'test-token' };
+    });
+
+    render(<ChallengeResponseAuthenticator />);
+    fireEvent.click(screen.getByText('Login with DeepThought'));
+
+    expect(screen.getByText('Status: Waiting for DeepThought app...')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText('Status: Verifying signature...')).toBeInTheDocument();
+    }, { timeout: 2000 }); // Increased timeout to handle 1s delay in component
+
+    await waitFor(() => {
+      expect(screen.getByText('Status: Login successful!')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('Session Token: test-token')).toBeInTheDocument();
+  });
+
+  it('shows an error message on failed login', async () => {
+    mockedVerifySignature.mockRejectedValue(new api.ApiError('Invalid signature', 400));
+
+    render(<ChallengeResponseAuthenticator />);
+    fireEvent.click(screen.getByText('Login with DeepThought'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Status: Error: Invalid signature')).toBeInTheDocument();
+    });
+  });
+});

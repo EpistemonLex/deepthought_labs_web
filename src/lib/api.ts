@@ -113,6 +113,43 @@ export async function validateLicense(
   return data;
 }
 
+export interface VerifySignatureResponse {
+  session_token: string;
+}
+
+/**
+ * Verifies a signature against the Sovereign Utility API.
+ * @param publicKey The public key of the user.
+ * @param challenge The challenge that was signed.
+ * @param signature The signature of the challenge.
+ * @returns A promise that resolves to the verify signature response.
+ */
+export async function verifySignature(
+  publicKey: string,
+  challenge: string,
+  signature: string,
+): Promise<VerifySignatureResponse> {
+  const response = await fetch(`/api/v2/auth/verify`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      public_key: publicKey,
+      challenge: challenge,
+      signature: signature,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new ApiError(data.message || `API Error: ${response.statusText}`, response.status);
+  }
+
+  return data;
+}
+
 /**
  * Requests a software download from the Sovereign Utility API.
  * @param licenseKey The license key for authorization.
