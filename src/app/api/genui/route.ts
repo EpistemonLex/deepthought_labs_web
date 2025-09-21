@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
 import sanitizeHtml from 'sanitize-html';
+import { withBearerTokenAuth } from '../../../lib/api_auth';
 
 class ServiceUnavailableError extends Error {
   constructor(message: string) {
@@ -9,20 +9,10 @@ class ServiceUnavailableError extends Error {
   }
 }
 
-// Helper function for timing-safe buffer comparison
-function timingSafeEqual(a: string, b: string): boolean {
-  try {
-    const aBuffer = Buffer.from(a, 'utf8');
-    const bBuffer = Buffer.from(b, 'utf8');
-
-    if (aBuffer.length !== bBuffer.length) {
-      return false;
-    }
-
-    return crypto.timingSafeEqual(aBuffer, bBuffer);
-  } catch (error) {
-    console.error('Error in timingSafeEqual:', error);
-    return false;
+class RateLimitError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'RateLimitError';
   }
 }
 
@@ -46,6 +36,9 @@ async function runAIPrompt(prompt: string) {
     if (response.status === 503) {
       throw new ServiceUnavailableError('The AI service is temporarily unavailable.');
     }
+    if (response.status === 429) {
+      throw new RateLimitError('Too many requests. Please try again later.');
+    }
     const errorText = await response.text();
     console.error("Cloudflare AI Error:", errorText);
     throw new Error(`Cloudflare AI API request failed with status ${response.status}`);
@@ -59,36 +52,10 @@ async function runAIPrompt(prompt: string) {
   return json.result.response;
 }
 
-export async function POST(request: Request) {
+async function handler(request: Request) {
   const startTime = Date.now();
 
-  // 1. Authentication
-  const authHeader = request.headers.get('Authorization');
-  const expectedToken = `Bearer ${process.env.GENUI_API_TOKEN}`;
-
-  if (!authHeader || !process.env.GENUI_API_TOKEN) {
-    return NextResponse.json({
-      ui_component: null,
-      metadata: null,
-      error: {
-        code: 'authentication_failed',
-        message: 'A valid API token is required.',
-      },
-    }, { status: 401 });
-  }
-
-  if (!timingSafeEqual(authHeader, expectedToken)) {
-    return NextResponse.json({
-      ui_component: null,
-      metadata: null,
-      error: {
-        code: 'authentication_failed',
-        message: 'A valid API token is required.',
-      },
-    }, { status: 401 });
-  }
-
-  // 2. Input Validation
+  // 1. Input Validation
   let body;
   try {
     body = await request.json();
@@ -175,6 +142,16 @@ export async function POST(request: Request) {
         },
       }, { status: 503 });
     }
+    if (error instanceof RateLimitError) {
+      return NextResponse.json({
+        ui_component: null,
+        metadata: null,
+        error: {
+          code: 'rate_limit_exceeded',
+          message: 'Too Many Requests',
+        },
+      }, { status: 429 });
+    }
 
     return NextResponse.json({
       ui_component: null,
@@ -186,3 +163,5 @@ export async function POST(request: Request) {
     }, { status: 500 });
   }
 }
+
+export const POST = withBearerTokenAuth(handler);

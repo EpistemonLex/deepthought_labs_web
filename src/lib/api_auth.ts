@@ -2,6 +2,56 @@ import { NextRequest, NextResponse } from 'next/server';
 
 type ApiHandler = (req: NextRequest, ...args: any[]) => Promise<NextResponse>;
 
+import crypto from 'crypto';
+
+// Helper function for timing-safe buffer comparison
+function timingSafeEqual(a: string, b: string): boolean {
+  try {
+    const aBuffer = Buffer.from(a, 'utf8');
+    const bBuffer = Buffer.from(b, 'utf8');
+
+    if (aBuffer.length !== bBuffer.length) {
+      return false;
+    }
+
+    return crypto.timingSafeEqual(aBuffer, bBuffer);
+  } catch (error) {
+    console.error('Error in timingSafeEqual:', error);
+    return false;
+  }
+}
+
+export function withBearerTokenAuth(handler: ApiHandler): ApiHandler {
+  return async (req: NextRequest, ...args: any[]) => {
+    const authHeader = req.headers.get('Authorization');
+    const expectedToken = `Bearer ${process.env.GENUI_API_TOKEN}`;
+
+    if (!authHeader || !process.env.GENUI_API_TOKEN) {
+      return NextResponse.json({
+        ui_component: null,
+        metadata: null,
+        error: {
+          code: 'authentication_failed',
+          message: 'A valid API token is required.',
+        },
+      }, { status: 401 });
+    }
+
+    if (!timingSafeEqual(authHeader, expectedToken)) {
+      return NextResponse.json({
+        ui_component: null,
+        metadata: null,
+        error: {
+          code: 'authentication_failed',
+          message: 'A valid API token is required.',
+        },
+      }, { status: 401 });
+    }
+
+    return handler(req, ...args);
+  };
+}
+
 export function withApiKeyAuth(handler: ApiHandler): ApiHandler {
   return async (req: NextRequest, ...args: any[]) => {
     const apiKey = req.headers.get('X-API-Key');
