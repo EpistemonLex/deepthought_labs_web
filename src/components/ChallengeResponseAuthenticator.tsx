@@ -16,20 +16,18 @@ export default function ChallengeResponseAuthenticator() {
     // 2. Simulate Desktop Interaction
     // In a real scenario, this would involve communicating with the desktop app.
     // For now, we'll use a mock function.
-    const mockSignChallenge = async (challenge: string) => {
-      // This is a mock implementation.
-      // A real implementation would use a cryptographic library to sign the challenge.
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
-      return {
-        publicKey: 'mock-public-key',
-        signature: `signed-${challenge}`,
-      };
-    };
-
+          const mockSignChallenge = async (challenge: string) => {
+            // This is a mock implementation.
+            // A real implementation would use a cryptographic library to sign the challenge.
+            return {
+              publicKey: 'mock-public-key',
+              signature: `signed-${challenge}`,
+            };
+          };
     const { publicKey, signature } = await mockSignChallenge(challenge);
 
-    setStatus('Verifying signature...');
     try {
+      setStatus('Verifying signature...');
       const response = await verifySignature(publicKey, challenge, signature);
       setSessionToken(response.session_token);
       setStatus('Login successful!');

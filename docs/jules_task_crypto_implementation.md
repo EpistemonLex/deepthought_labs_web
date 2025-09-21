@@ -1,4 +1,4 @@
-# Task for Jules: Backend Cryptographic Implementation for Product-Led Identity
+# Task for Jules: Implement Backend Cryptographic Implementation for Product-Led Identity
 
 **Objective:**
 Replace the mock cryptographic verification logic in the Key Validation Backend with actual, robust cryptographic signature verification. This is a critical step towards enabling the secure, product-led authentication system.

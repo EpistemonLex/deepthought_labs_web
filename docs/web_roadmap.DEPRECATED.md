@@ -1,3 +1,9 @@
+# [DEPRECATED] - Historical Document
+
+_**This document is for historical reference only.** The authoritative and up-to-date project plan is the **[System Roadmap](./system_roadmap.md)**._
+
+---
+
 # DeepThought Labs Web Presence: A Phased Roadmap
 
 This document outlines the strategic, phased development of the DeepThought Labs website, evolving it from a simple landing page into a dynamic, interactive platform that demonstrates our core technology, engages our audience, and serves as a foundation for our product ecosystem.
