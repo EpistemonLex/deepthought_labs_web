@@ -82,7 +82,7 @@ describe('LicenseValidator', () => {
     fireEvent.click(screen.getByRole('button', { name: /validate license/i }));
 
     await waitFor(() => {
-      expect(screen.getByText('Error')).toBeInTheDocument();
+      expect(screen.getByTestId('error-message')).toBeInTheDocument();
       expect(screen.getByText('Invalid license key.')).toBeInTheDocument();
     });
   });

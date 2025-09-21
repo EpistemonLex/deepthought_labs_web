@@ -90,6 +90,7 @@ describe('Atelier Page', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Generate UI' }));
 
     await waitFor(() => {
+      expect(screen.getByTestId('error-message')).toBeInTheDocument();
       expect(
         screen.getByText(
           'Service Unavailable: Service Unavailable. The AI service may be temporarily down.',
