@@ -21,6 +21,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    // PII Compliance Placeholder:
+    // - Logging: In a real environment, access logs containing IP addresses
+    //   would be anonymized after 30 days.
     const payload = jwt.verify(token, secretString);
     console.log('JWT payload verified:', payload);
 

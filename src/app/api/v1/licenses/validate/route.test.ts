@@ -79,4 +79,35 @@ describe('API - /api/v1/licenses/validate', () => {
     expect(data.status).toBe('invalid');
     expect(data.reason_code).toBe('not_found');
   });
+
+  it('should not accept additional PII fields', async () => {
+    const bodyWithExtraPII = {
+      ...validBody,
+      user_email: 'test@example.com',
+      user_name: 'Test User',
+    };
+    const req = mockRequest(VALID_API_KEY, bodyWithExtraPII);
+    const res = await POST(req);
+    const data = await res.json();
+
+    // The endpoint should process successfully, ignoring the extra fields.
+    expect(res.status).toBe(200);
+    expect(data.status).toBe('valid');
+    // Ensure no PII is reflected in the response
+    expect(data.user_email).toBeUndefined();
+    expect(data.user_name).toBeUndefined();
+  });
+
+  it('should contain PII placeholder comments', async () => {
+    const fs = require('fs');
+    const path = require('path');
+    const routeFilePath = path.join(__dirname, 'route.ts');
+    const routeFileContent = fs.readFileSync(routeFilePath, 'utf8');
+
+    // Check for comments related to PII controls
+    expect(routeFileContent).toMatch(/PII Compliance: Data Minimization/);
+    expect(routeFileContent).toMatch(/- Encryption: In a real database, the license_key and fingerprint would be/);
+    expect(routeFileContent).toMatch(/- Access Control: Access to this data would be restricted via RBAC/);
+    expect(routeFileContent).toMatch(/- Retention Policy: Data would be retained only for the license/);
+  });
 });

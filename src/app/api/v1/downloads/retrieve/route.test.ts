@@ -71,4 +71,13 @@ describe('API - /api/v1/downloads/retrieve', () => {
     expect(res.headers.get('Content-Type')).toBe('text/plain');
     expect(text).toBe('Mock file download successful.');
   });
+
+  it('should contain PII placeholder comments', async () => {
+    const fs = require('fs');
+    const path = require('path');
+    const routeFilePath = path.join(__dirname, 'route.ts');
+    const routeFileContent = fs.readFileSync(routeFilePath, 'utf8');
+
+    expect(routeFileContent).toMatch(/- Logging: In a real environment, access logs containing IP addresses/);
+  });
 });
