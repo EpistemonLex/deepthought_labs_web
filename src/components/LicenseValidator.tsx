@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import ErrorMessage from './ErrorMessage';
 import { validateLicense, LicenseValidationResponse } from '@/lib/api/sovereign';
 import { ApiError } from '@/lib/api';
 
@@ -77,12 +78,7 @@ export default function LicenseValidator() {
           </button>
         </div>
       </form>
-      {error && (
-        <div className="mt-4 p-4 bg-red-900 border border-red-700 text-red-200 rounded">
-          <p className="font-bold">Error</p>
-          <p>{error}</p>
-        </div>
-      )}
+      {error && <ErrorMessage message={error} />}
       {validationResponse && (
         <div className={`mt-4 p-4 rounded ${validationResponse.status === 'valid' ? 'bg-green-900 border border-green-700' : 'bg-yellow-900 border border-yellow-700'}`}>
            <p className="font-bold">Validation Result</p>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { generateUI, ApiError } from '../../lib/api';
 import Header from '../../components/Header';
+import ErrorMessage from '@/components/ErrorMessage';
 
 export default function Atelier() {
   const [prompt, setPrompt] = useState('');
@@ -93,12 +94,7 @@ export default function Atelier() {
           </button>
         </div>
 
-        {error && (
-          <div className="mt-8 p-4 bg-red-900 text-red-200 rounded-lg max-w-3xl mx-auto">
-            <p className="font-semibold">Error</p>
-            <p className="mt-1">{error}</p>
-          </div>
-        )}
+        {error && <ErrorMessage message={error} />}
 
         <div className="mt-16 p-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
           <h3 className="text-3xl font-bold mb-4">Generated UI Mock-up</h3>

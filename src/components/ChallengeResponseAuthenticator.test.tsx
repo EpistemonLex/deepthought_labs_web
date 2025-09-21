@@ -53,7 +53,9 @@ describe('ChallengeResponseAuthenticator', () => {
     fireEvent.click(screen.getByText('Login with DeepThought'));
 
     await waitFor(() => {
-      expect(screen.getByText('Status: Error: Invalid signature')).toBeInTheDocument();
+      expect(screen.getByText('Status: Failed')).toBeInTheDocument();
+      expect(screen.getByTestId('error-message')).toBeInTheDocument();
+      expect(screen.getByText('Invalid signature')).toBeInTheDocument();
     });
   });
 });

@@ -89,7 +89,7 @@ describe('DownloadRequestForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /request download/i }));
 
     await waitFor(() => {
-      expect(screen.getByText('Error')).toBeInTheDocument();
+      expect(screen.getByTestId('error-message')).toBeInTheDocument();
       expect(screen.getByText('This license is not eligible for downloads.')).toBeInTheDocument();
     });
   });
