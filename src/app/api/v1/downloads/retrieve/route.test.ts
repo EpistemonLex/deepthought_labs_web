@@ -4,6 +4,10 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = 'a-super-secret-jwt-download-secret-that-is-long-enough';
 
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generateToken = (payload: any, expiresIn: string | number): string => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn });
 };
@@ -61,22 +65,31 @@ describe('API - /api/v1/downloads/retrieve', () => {
     process.env.JWT_DOWNLOAD_SECRET = JWT_SECRET; // Restore for other tests
   });
 
-  it('should return 200 OK for a valid token', async () => {
-    const validToken = generateToken({ product_id: 'test-product' }, '1h');
+  it('should return 403 Forbidden for a token with an invalid payload', async () => {
+    const tokenWithInvalidPayload = generateToken({ some_other_data: 'foo' }, '1h');
+    const req = mockRequest(tokenWithInvalidPayload);
+    const res = await GET(req);
+    const data = await res.json();
+    expect(res.status).toBe(403);
+    expect(data.error.code).toBe('invalid_token');
+  });
+
+  it('should return 200 OK and the correct path for a valid token', async () => {
+    const productPath = '/downloads/deepthought-pro-2.1.0-arm64.dmg';
+    const validToken = generateToken({ product_path: productPath }, '1h');
     const req = mockRequest(validToken);
     const res = await GET(req);
-    const text = await res.text();
+    const data = await res.json();
 
     expect(res.status).toBe(200);
-    expect(res.headers.get('Content-Type')).toBe('text/plain');
-    expect(text).toBe('Mock file download successful.');
+    expect(res.headers.get('Content-Type')).toBe('application/json');
+    expect(data.message).toBe('Redirecting to download.');
+    expect(data.path).toBe(productPath);
   });
 
   it('should contain PII placeholder comments', async () => {
-    const fs = require('fs');
-    const path = require('path');
-    const routeFilePath = path.join(__dirname, 'route.ts');
-    const routeFileContent = fs.readFileSync(routeFilePath, 'utf8');
+    const routeFilePath = join(__dirname, 'route.ts');
+    const routeFileContent = readFileSync(routeFilePath, 'utf8');
 
     expect(routeFileContent).toMatch(/- Logging: In a real environment, access logs containing IP addresses/);
   });
