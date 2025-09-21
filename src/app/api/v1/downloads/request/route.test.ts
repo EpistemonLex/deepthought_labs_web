@@ -1,22 +1,13 @@
-import { POST } from './route';
 import { NextRequest } from 'next/server';
-import jwt from 'jsonwebtoken';
-import * as database from '@/lib/database';
+import { vi, describe, it, expect, afterEach, beforeEach } from 'vitest';
+
+// Mock the global fetch function
+global.fetch = vi.fn();
 
 const VALID_API_KEY = 'test-api-key';
-const JWT_SECRET = 'a-super-secret-jwt-download-secret-that-is-long-enough';
+const VALID_LICENSE_KEY = 'valid-license-key';
 
-// Get mock data from the database
-const VALID_LICENSE_KEY = database.licenses.find((l) => l.status === 'active')!.key;
-const EXPIRED_LICENSE_KEY = database.licenses.find((l) => l.status === 'expired')!.key;
-const REVOKED_LICENSE_KEY = database.licenses.find((l) => l.status === 'revoked')!.key;
-const VALID_PRODUCT = database.products[0];
-
-import { readFileSync } from 'fs';
-import { join } from 'path';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mockRequest = (apiKey: string | null, body: any): NextRequest => {
+const mockRequest = (apiKey: string | null, body: Record<string, unknown>): NextRequest => {
   const headers = new Headers();
   if (apiKey) {
     headers.set('X-API-Key', apiKey);
@@ -30,104 +21,86 @@ const mockRequest = (apiKey: string | null, body: any): NextRequest => {
 
 const validBody = {
   license_key: VALID_LICENSE_KEY,
-  product_id: VALID_PRODUCT.id,
-  version: VALID_PRODUCT.version,
-  platform: VALID_PRODUCT.platform,
+  product_id: 'deepthought-pro',
+  version: '1.0.0',
+  platform: 'linux',
 };
 
-describe('API - /api/v1/downloads/request', () => {
+describe('API - /api/v1/downloads/request (Proxy)', () => {
   beforeEach(() => {
-    process.env.INTEGRATOR_API_KEY = VALID_API_KEY;
-    process.env.JWT_DOWNLOAD_SECRET = JWT_SECRET;
+    vi.resetModules();
+    vi.clearAllMocks();
+    process.env.NEXT_PUBLIC_INTEGRATOR_API_KEY = VALID_API_KEY;
+    process.env.INTEGRATOR_API_KEY = 'server-side-secret-key';
+    process.env.SOVEREIGN_API_URL = 'https://sovereign.test.api';
   });
 
   afterEach(() => {
+    delete process.env.NEXT_PUBLIC_INTEGRATOR_API_KEY;
     delete process.env.INTEGRATOR_API_KEY;
-    delete process.env.JWT_DOWNLOAD_SECRET;
+    delete process.env.SOVEREIGN_API_URL;
   });
 
-  it('should return 401 Unauthorized if API key is invalid', async () => {
-    const req = mockRequest('invalid-key', validBody);
-    const res = await POST(req);
-    expect(res.status).toBe(401);
-  });
-
-  it('should return 403 Forbidden for a non-existent license key', async () => {
-    const req = mockRequest(VALID_API_KEY, { ...validBody, license_key: 'non-existent-key' });
-    const res = await POST(req);
-    expect(res.status).toBe(403);
-  });
-
-  it('should return 403 Forbidden for an expired license key', async () => {
-    const req = mockRequest(VALID_API_KEY, { ...validBody, license_key: EXPIRED_LICENSE_KEY });
-    const res = await POST(req);
-    expect(res.status).toBe(403);
-  });
-
-  it('should return 403 Forbidden for a revoked license key', async () => {
-    const req = mockRequest(VALID_API_KEY, { ...validBody, license_key: REVOKED_LICENSE_KEY });
-    const res = await POST(req);
-    expect(res.status).toBe(403);
-  });
-
-  it('should return 404 Not Found for a non-existent product ID', async () => {
-    const req = mockRequest(VALID_API_KEY, { ...validBody, product_id: 'non-existent-product' });
-    const res = await POST(req);
-    expect(res.status).toBe(404);
-  });
-
-  it('should return 404 Not Found for a non-existent product version', async () => {
-    const req = mockRequest(VALID_API_KEY, { ...validBody, version: '0.0.0' });
-    const res = await POST(req);
-    expect(res.status).toBe(404);
-  });
-
-  it('should return 400 Bad Request for a malformed body', async () => {
-    const req = mockRequest(VALID_API_KEY, { license_key: VALID_LICENSE_KEY }); // missing fields
-    const res = await POST(req);
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 500 Internal Server Error if JWT secret is not set', async () => {
-    delete process.env.JWT_DOWNLOAD_SECRET;
-    const req = mockRequest(VALID_API_KEY, validBody);
+  it('should return 401 Unauthorized if client API key is missing', async () => {
+    const { POST } = await import('./route');
+    const req = mockRequest(null, validBody);
     const res = await POST(req);
     const data = await res.json();
-    expect(res.status).toBe(500);
-    expect(data.error.code).toBe('internal_server_error');
+
+    expect(res.status).toBe(401);
+    expect(data.error.code).toBe('unauthorized');
   });
 
-  it('should return 200 OK with a valid JWT for a valid request', async () => {
+  it('should return 400 Bad Request if request body is malformed', async () => {
+    const { POST } = await import('./route');
+    const req = mockRequest(VALID_API_KEY, { license_key: VALID_LICENSE_KEY }); // Missing fields
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(data.error.code).toBe('bad_request');
+  });
+
+  it('should proxy the request to the Sovereign API and return the response', async () => {
+    const { POST } = await import('./route');
+    const mockApiResponse = { download_token: 'some-jwt-token' };
+    (fetch as vi.Mock).mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(mockApiResponse),
+    });
+
     const req = mockRequest(VALID_API_KEY, validBody);
     const res = await POST(req);
     const data = await res.json();
 
     expect(res.status).toBe(200);
-    expect(data.download_token).toBeDefined();
-    expect(data.expires_in).toBe(300);
-    expect(data.file_name).toBe(VALID_PRODUCT.path.split('/').pop());
+    expect(data).toEqual(mockApiResponse);
 
-    // Verify the JWT
-    const payload = jwt.verify(data.download_token, JWT_SECRET) as jwt.JwtPayload;
-    expect(payload.product_path).toBe(VALID_PRODUCT.path);
-    expect(payload.exp).toBeDefined();
+    expect(fetch).toHaveBeenCalledWith('https://sovereign.test.api/downloads/request', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': 'server-side-secret-key',
+      },
+      body: JSON.stringify(validBody),
+    });
   });
 
-  it('should not include any PII in the JWT payload', async () => {
+  it('should forward non-200 responses from the Sovereign API', async () => {
+    const { POST } = await import('./route');
+    const mockApiResponse = { error: 'forbidden' };
+    (fetch as vi.Mock).mockResolvedValue({
+      ok: false,
+      status: 403,
+      json: () => Promise.resolve(mockApiResponse),
+    });
+
     const req = mockRequest(VALID_API_KEY, validBody);
     const res = await POST(req);
     const data = await res.json();
-    const payload = jwt.verify(data.download_token, JWT_SECRET) as jwt.JwtPayload;
 
-    expect(payload.license_key).toBeUndefined();
-    expect(payload.email).toBeUndefined();
-    expect(payload.product_id).toBeUndefined();
-  });
-
-  it('should contain PII placeholder comments', async () => {
-    const routeFilePath = join(__dirname, 'route.ts');
-    const routeFileContent = readFileSync(routeFilePath, 'utf8');
-
-    expect(routeFileContent).toMatch(/- Logging: In a real environment, access logs containing IP addresses/);
+    expect(res.status).toBe(403);
+    expect(data).toEqual(mockApiResponse);
   });
 });

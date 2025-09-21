@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withApiKeyAuth } from '@/lib/api_auth';
-import jwt from 'jsonwebtoken';
-import { findLicense, findProduct } from '@/lib/database';
+
+const SOVEREIGN_API_BASE_URL = process.env.SOVEREIGN_API_URL || 'http://localhost:8000/api/v1';
 
 async function handler(req: NextRequest) {
   try {
@@ -15,58 +15,24 @@ async function handler(req: NextRequest) {
       );
     }
 
-    const license = findLicense(license_key);
-    if (!license || license.status !== 'active') {
-      return NextResponse.json(
-        {
-          error: {
-            code: 'forbidden',
-            message: 'The provided license key is not valid or does not grant download access.',
-          },
+    const response = await fetch(`${SOVEREIGN_API_BASE_URL}/downloads/request`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': process.env.INTEGRATOR_API_KEY || '',
         },
-        { status: 403 }
-      );
-    }
+        body: JSON.stringify(body),
+    });
 
-    const product = findProduct(product_id, version, platform);
-    if (!product) {
-      return NextResponse.json(
-        {
-          error: {
-            code: 'not_found',
-            message: 'The requested product could not be found.',
-          },
+    const data = await response.json();
+
+    return new NextResponse(JSON.stringify(data), {
+        status: response.status,
+        headers: {
+            'Content-Type': 'application/json',
         },
-        { status: 404 }
-      );
-    }
+    });
 
-    // PII Compliance Placeholder:
-    // - Logging: In a real environment, access logs containing IP addresses
-    //   would be anonymized after 30 days.
-    const secretString = process.env.JWT_DOWNLOAD_SECRET;
-    if (!secretString) {
-      console.error('JWT_DOWNLOAD_SECRET is not set.');
-      return NextResponse.json(
-        { error: { code: 'internal_server_error', message: 'JWT secret is not configured.' } },
-        { status: 500 }
-      );
-    }
-
-    const token = jwt.sign(
-      { product_path: product.path },
-      secretString,
-      { expiresIn: '5m' }
-    );
-
-    const response = {
-      download_token: token,
-      expires_in: 300,
-      file_name: product.path.split('/').pop(),
-      file_size: 123456789, // This can remain mocked for now
-    };
-
-    return NextResponse.json(response, { status: 200 });
   } catch (error) {
     if (error instanceof SyntaxError) {
       return NextResponse.json(
@@ -74,7 +40,7 @@ async function handler(req: NextRequest) {
         { status: 400 }
       );
     }
-    console.error('Download request error:', error);
+    console.error('Download request proxy error:', error);
     return NextResponse.json(
       { error: { code: 'internal_server_error', message: 'An unexpected error occurred.' } },
       { status: 500 }

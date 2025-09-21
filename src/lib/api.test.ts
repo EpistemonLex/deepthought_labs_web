@@ -39,7 +39,7 @@ describe('api.ts', () => {
 
       const ui = await generateUI('test prompt');
       expect(ui).toBe('<div>Hello</div>');
-      expect(fetch).toHaveBeenCalledWith('https://api.white.ai/v1/genui', {
+      expect(fetch).toHaveBeenCalledWith('/api/genui', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ describe('api.ts', () => {
 
       const response = await validateLicense(licenseKey, productId, fingerprint);
       expect(response).toEqual(mockApiResponse);
-      expect(fetch).toHaveBeenCalledWith('http://localhost:8000/api/v1/licenses/validate', {
+      expect(fetch).toHaveBeenCalledWith('/api/v1/licenses/validate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -157,7 +157,7 @@ describe('api.ts', () => {
 
       const response = await requestDownload(licenseKey, productId, version, platform);
       expect(response).toEqual(mockApiResponse);
-      expect(fetch).toHaveBeenCalledWith('http://localhost:8000/api/v1/downloads/request', {
+      expect(fetch).toHaveBeenCalledWith('/api/v1/downloads/request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

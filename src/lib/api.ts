@@ -1,8 +1,5 @@
 // This file will contain the logic for interacting with the GenUI API and Sovereign Utility API.
 
-// Base URL for the Sovereign Utility API
-const SOVEREIGN_API_BASE_URL = process.env.NEXT_PUBLIC_SOVEREIGN_API_URL || 'http://localhost:8000/api/v1';
-
 export interface LicenseValidationResponse {
   status: string;
   message: string;
@@ -43,7 +40,7 @@ export async function generateUI(prompt: string): Promise<string> {
     );
   }
 
-  const response = await fetch('https://api.white.ai/v1/genui', {
+  const response = await fetch('/api/genui', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -91,7 +88,7 @@ export async function validateLicense(
     throw new ApiError('Integrator API key is not configured.', 500);
   }
 
-  const response = await fetch(`${SOVEREIGN_API_BASE_URL}/licenses/validate`, {
+  const response = await fetch('/api/v1/licenses/validate', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -169,7 +166,7 @@ export async function requestDownload(
     throw new ApiError('Integrator API key is not configured.', 500);
   }
 
-  const response = await fetch(`${SOVEREIGN_API_BASE_URL}/downloads/request`, {
+  const response = await fetch('/api/v1/downloads/request', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

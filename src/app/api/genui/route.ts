@@ -16,7 +16,15 @@ class RateLimitError extends Error {
   }
 }
 
-async function runAIPrompt(prompt: string) {
+interface CloudflareAIResponse {
+  result: {
+    response: string;
+  };
+  success: boolean;
+  errors: string[];
+}
+
+async function runAIPrompt(prompt: string): Promise<string> {
   const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
   const apiToken = process.env.CLOUDFLARE_API_TOKEN;
   const model = '@cf/meta/llama-3.1-8b-instruct';
@@ -44,7 +52,7 @@ async function runAIPrompt(prompt: string) {
     throw new Error(`Cloudflare AI API request failed with status ${response.status}`);
   }
 
-  const json: any = await response.json();
+  const json: CloudflareAIResponse = await response.json();
   if (!json.success) {
     console.error("Cloudflare AI Error:", json.errors);
     throw new Error("Cloudflare AI request was not successful.");
@@ -59,7 +67,7 @@ async function handler(request: Request) {
   let body;
   try {
     body = await request.json();
-  } catch (e) {
+  } catch {
     return NextResponse.json({
       ui_component: null,
       metadata: null,
@@ -130,7 +138,7 @@ async function handler(request: Request) {
       error: null,
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error(error);
     if (error instanceof ServiceUnavailableError) {
       return NextResponse.json({
