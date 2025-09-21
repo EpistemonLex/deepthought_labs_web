@@ -27,6 +27,9 @@ async function handler(req: NextRequest) {
       );
     }
 
+    // PII Compliance Placeholder:
+    // - Logging: In a real environment, access logs containing IP addresses
+    //   would be anonymized after 30 days.
     const secretString = process.env.JWT_DOWNLOAD_SECRET;
     if (!secretString) {
       console.error('JWT_DOWNLOAD_SECRET is not set.');

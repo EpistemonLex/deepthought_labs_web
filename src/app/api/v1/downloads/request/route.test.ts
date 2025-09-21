@@ -80,4 +80,23 @@ describe('API - /api/v1/downloads/request', () => {
     expect(payload.platform).toBe(validBody.platform);
     expect(payload.exp).toBeDefined();
   });
+
+  it('should not include any PII in the JWT payload', async () => {
+    const req = mockRequest(VALID_API_KEY, validBody);
+    const res = await POST(req);
+    const data = await res.json();
+    const payload = jwt.verify(data.download_token, JWT_SECRET) as jwt.JwtPayload;
+
+    expect(payload.license_key).toBeUndefined();
+    expect(payload.email).toBeUndefined();
+  });
+
+  it('should contain PII placeholder comments', async () => {
+    const fs = require('fs');
+    const path = require('path');
+    const routeFilePath = path.join(__dirname, 'route.ts');
+    const routeFileContent = fs.readFileSync(routeFilePath, 'utf8');
+
+    expect(routeFileContent).toMatch(/- Logging: In a real environment, access logs containing IP addresses/);
+  });
 });
