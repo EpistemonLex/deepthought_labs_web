@@ -1,9 +1,9 @@
 // src/app/canon/[slug]/page.test.tsx
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import CanonDocumentPage from './page';
-import fs from 'fs';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import CanonDocumentPage, { generateStaticParams } from './page';
 import { notFound } from 'next/navigation';
+import * as contentUtils from '../../../lib/content-utils';
 import matter from 'gray-matter';
 
 // Mock dependencies
@@ -14,80 +14,80 @@ vi.mock('../../../components/Header', () => ({
 vi.mock('next/navigation', () => ({
   notFound: vi.fn(),
 }));
-vi.mock('fs');
+vi.mock('../../../lib/content-utils');
 vi.mock('gray-matter');
 
-const mockedFs = fs as vi.Mocked<typeof fs>;
+const mockedContentUtils = contentUtils as vi.Mocked<typeof contentUtils>;
 const mockedMatter = matter as unknown as vi.Mocked<typeof matter>;
-
-const mockManifest = [
-  {
-    title: 'Test Document',
-    category: 'Testing',
-    slug: 'test-doc',
-    markdown_file: 'src/canon/docs/test-doc.md',
-    podcast_file: 'test-podcast.mp3',
-    abstract: 'An abstract for our test document.',
-  },
-];
-
-const mockMarkdownContent = '## Markdown Content\n\nThis is the body of the document.';
 
 describe('Canon Document Page', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('renders the document content when a document is found', () => {
-    // Arrange: Mock the file system and gray-matter
-    mockedFs.readFileSync.mockImplementation((path) => {
-      if (path.toString().includes('publication_manifest.json')) {
-        return JSON.stringify(mockManifest);
-      }
-      if (path.toString().includes('test-doc.md')) {
-        return mockMarkdownContent;
-      }
-      return '';
-    });
-    mockedFs.existsSync.mockReturnValue(true);
-    mockedMatter.mockReturnValue({
-      content: mockMarkdownContent,
-      data: {},
-      excerpt: '',
-      isEmpty: false
+  describe('Page Rendering', () => {
+    it('renders the document content when a document is found', () => {
+      // Arrange
+      const mockRawContent = '## Markdown Content\n\nThis is the body of the document.';
+      const mockParsedContent = 'Parsed Markdown Content';
+      const mockDocData = {
+        title: 'Test Document',
+        category: 'Testing',
+        slug: 'test-doc',
+        markdown_file: 'test.md',
+        podcast_file: 'test-podcast.mp3',
+        abstract: 'An abstract for our test document.',
+        content: mockRawContent,
+      };
+
+      mockedContentUtils.getDocument.mockReturnValue(mockDocData);
+      mockedMatter.mockReturnValue({
+          content: mockParsedContent,
+          data: {},
+          excerpt: '',
+          isEmpty: false
+      });
+
+      // Act
+      render(<CanonDocumentPage params={{ slug: 'test-doc' }} />);
+
+      // Assert
+      expect(screen.getByRole('heading', { name: 'Test Document', level: 1 })).toBeInTheDocument();
+      expect(screen.getByText('Category: Testing')).toBeInTheDocument();
+      expect(screen.getByText('An abstract for our test document.')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Listen to the Podcast' })).toBeInTheDocument();
+      expect(screen.getByText(mockParsedContent)).toBeInTheDocument();
     });
 
-    // Act
-    render(<CanonDocumentPage params={{ slug: 'test-doc' }} />);
+    it('calls notFound when getDocument returns null', () => {
+      // Arrange
+      mockedContentUtils.getDocument.mockReturnValue(null);
 
-    // Assert
-    expect(screen.getByRole('heading', { name: 'Test Document', level: 1 })).toBeInTheDocument();
-    expect(screen.getByText('Category: Testing')).toBeInTheDocument();
-    expect(screen.getByText('An abstract for our test document.')).toBeInTheDocument();
-    // In jsdom, the <audio> element may not be fully accessible.
-    // A more reliable test is to check for the heading of the podcast section.
-    expect(screen.getByRole('heading', { name: 'Listen to the Podcast' })).toBeInTheDocument();
-    // Check for rendered markdown content (ReactMarkdown output)
-    expect(screen.getByText('Markdown Content')).toBeInTheDocument();
+      // Act & Assert
+      // The notFound() function throws an error, so we test that the component throws.
+      expect(() => render(<CanonDocumentPage params={{ slug: 'non-existent' }} />)).toThrow();
+      expect(notFound).toHaveBeenCalled();
+    });
   });
 
-  it('calls notFound when the document does not exist in the manifest', () => {
-    // Arrange
-    mockedFs.readFileSync.mockReturnValue(JSON.stringify(mockManifest));
+  describe('generateStaticParams', () => {
+    it('should return an array of slugs from the manifest', async () => {
+      // Arrange
+      const mockManifest = [
+        { slug: 'doc-1', title: 'Doc 1', category: 'Cat 1', markdown_file: '1.md', podcast_file: '', abstract: '' },
+        { slug: 'doc-2', title: 'Doc 2', category: 'Cat 2', markdown_file: '2.md', podcast_file: '', abstract: '' },
+      ];
+      mockedContentUtils.getManifest.mockReturnValue(mockManifest);
 
-    // Act & Assert
-    // The notFound function from Next.js throws a specific error, which we catch.
-    expect(() => render(<CanonDocumentPage params={{ slug: 'non-existent' }} />)).toThrow();
-    expect(notFound).toHaveBeenCalled();
-  });
+      // Act
+      const params = await generateStaticParams();
 
-  it('calls notFound when the markdown file does not exist', () => {
-    // Arrange
-    mockedFs.readFileSync.mockReturnValue(JSON.stringify(mockManifest));
-    mockedFs.existsSync.mockReturnValue(false); // Simulate file not existing
-
-    // Act & Assert
-    expect(() => render(<CanonDocumentPage params={{ slug: 'test-doc' }} />)).toThrow();
-    expect(notFound).toHaveBeenCalled();
+      // Assert
+      expect(params).toEqual([
+        { slug: 'doc-1' },
+        { slug: 'doc-2' },
+      ]);
+      expect(mockedContentUtils.getManifest).toHaveBeenCalledOnce();
+    });
   });
 });

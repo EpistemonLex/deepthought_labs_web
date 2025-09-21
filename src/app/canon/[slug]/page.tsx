@@ -1,26 +1,9 @@
 // src/app/canon/[slug]/page.tsx
-import fs from 'fs';
-import path from 'path';
 import matter from 'gray-matter';
 import ReactMarkdown from 'react-markdown';
 import { notFound } from 'next/navigation';
 import Header from '../../../components/Header';
-
-interface DocumentManifestEntry {
-  title: string;
-  category: string;
-  slug: string;
-  markdown_file: string;
-  podcast_file: string;
-  abstract: string;
-}
-
-// Function to read the manifest
-function getManifest(): DocumentManifestEntry[] {
-  const manifestPath = path.join(process.cwd(), 'src/canon/publication_manifest.json');
-  const manifestContents = fs.readFileSync(manifestPath, 'utf8');
-  return JSON.parse(manifestContents);
-}
+import { getManifest, getDocument as getDocumentData } from '../../../lib/content-utils';
 
 // This function tells Next.js which slugs (routes) to pre-render at build time.
 export async function generateStaticParams() {
@@ -30,29 +13,22 @@ export async function generateStaticParams() {
   }));
 }
 
-// This function fetches the data for a specific document.
+// This function fetches and prepares the data for a specific document.
 function getDocument(slug: string) {
-  const manifest = getManifest();
-  const docEntry = manifest.find((doc) => doc.slug === slug);
+    const docData = getDocumentData(slug);
 
-  if (!docEntry) {
-    return null;
-  }
+    if (!docData) {
+        return null;
+    }
 
-  const filePath = path.join(process.cwd(), docEntry.markdown_file);
-  
-  if (!fs.existsSync(filePath)) {
-    console.error(`Markdown file not found for slug ${slug}: ${filePath}`);
-    return null;
-  }
+    // Metadata is from the manifest, content is from the markdown file.
+    const { content: rawContent, ...meta } = docData;
+    const { content: parsedContent } = matter(rawContent);
 
-  const fileContents = fs.readFileSync(filePath, 'utf8');
-  const { content } = matter(fileContents); // Only content needed, metadata from manifest
-
-  return {
-    ...docEntry,
-    content,
-  };
+    return {
+        ...meta,
+        content: parsedContent,
+    };
 }
 
 export default function CanonDocument({ params }: { params: { slug: string } }) {
