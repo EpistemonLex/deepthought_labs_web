@@ -30,5 +30,13 @@
     "markdown_file": "0_canon/The_DeepThought_Paradigm.md",
     "podcast_file": "",
     "abstract": "The DeepThought Paradigm represents a fundamental shift in how we conceive, design, and interact with intelligent systems. It moves beyond the traditional, monolithic application model towards an emergent, decentralized, and user-sovereign ecosystem."
+  },
+  {
+    "title": "AI Context Blueprint",
+    "category": "Architecture",
+    "slug": "ai-context-blueprint",
+    "markdown_file": "0_canon/AI_CONTEXT_BLUEPRINT.md",
+    "podcast_file": "",
+    "abstract": "The AI Context Blueprint defines a structured approach to managing and leveraging contextual information for agentic AI systems within the DeepThought Paradigm."
   }
 ]
