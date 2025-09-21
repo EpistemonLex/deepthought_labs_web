@@ -21,15 +21,15 @@ vi.mock('sanitize-html', () => {
 describe('/api/genui POST', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.GENUI_API_TOKEN = 'wht-live-sk-7b3d9a8f-c1e0-4f6a-8d2b-5c9e1a4g0h2i';
+    process.env.NEXT_PUBLIC_GENUI_API_TOKEN = 'wht-live-sk-7b3d9a8f-c1e0-4f6a-8d2b-5c9e1a4g0h2i';
     process.env.CLOUDFLARE_ACCOUNT_ID = 'test-account-id';
     process.env.CLOUDFLARE_API_TOKEN = 'test-cf-token';
   });
 
-  const createMockRequest = (body: any, headers: Record<string, string> = {}) => {
+  const createMockRequest = (body: Record<string, unknown>, headers: Record<string, string> = {}) => {
     const defaultHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.GENUI_API_TOKEN}`,
+      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GENUI_API_TOKEN}`,
       ...headers,
     };
     return new NextRequest('http://localhost/api/genui', {
@@ -71,7 +71,7 @@ describe('/api/genui POST', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.GENUI_API_TOKEN}`,
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GENUI_API_TOKEN}`,
         },
         body: 'not a json',
       });

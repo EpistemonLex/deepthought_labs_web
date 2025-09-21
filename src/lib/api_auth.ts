@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ApiHandler = (req: NextRequest, ...args: any[]) => Promise<NextResponse>;
 
 import crypto from 'crypto';
@@ -22,11 +23,12 @@ function timingSafeEqual(a: string, b: string): boolean {
 }
 
 export function withBearerTokenAuth(handler: ApiHandler): ApiHandler {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return async (req: NextRequest, ...args: any[]) => {
     const authHeader = req.headers.get('Authorization');
-    const expectedToken = `Bearer ${process.env.GENUI_API_TOKEN}`;
+    const expectedToken = `Bearer ${process.env.NEXT_PUBLIC_GENUI_API_TOKEN}`;
 
-    if (!authHeader || !process.env.GENUI_API_TOKEN) {
+    if (!authHeader || !process.env.NEXT_PUBLIC_GENUI_API_TOKEN) {
       return NextResponse.json({
         ui_component: null,
         metadata: null,
@@ -53,12 +55,13 @@ export function withBearerTokenAuth(handler: ApiHandler): ApiHandler {
 }
 
 export function withApiKeyAuth(handler: ApiHandler): ApiHandler {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return async (req: NextRequest, ...args: any[]) => {
     const apiKey = req.headers.get('X-API-Key');
-    const expectedApiKey = process.env.INTEGRATOR_API_KEY;
+    const expectedApiKey = process.env.NEXT_PUBLIC_INTEGRATOR_API_KEY;
 
     if (!expectedApiKey) {
-      console.error('INTEGRATOR_API_KEY is not set in environment variables.');
+      console.error('NEXT_PUBLIC_INTEGRATOR_API_KEY is not set in environment variables.');
       return NextResponse.json(
         { error: { code: 'internal_server_error', message: 'API key is not configured.' } },
         { status: 500 }
