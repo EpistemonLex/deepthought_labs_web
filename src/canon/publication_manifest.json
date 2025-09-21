@@ -6,5 +6,21 @@
     "markdown_file": "Unsorted_Docs/The Deepthought Philosophy, A Final Revi.md",
     "podcast_file": "Beyond Prompt Engineering_ Building Your AI Moat with Problem Formulation and Local-First Power.mp3",
     "abstract": "\"The Deepthought Philosophy\" argues that the future of AI lies not in replacing human intellect, but in symbiotic co-creation. It proposes a strategic shift away from viewing AI technology as a competitive advantage, positing that true, defensible moats are built by embedding commoditized AI into unique, proprietary workflows. This creates a \"process flywheel\" where an organization's operational DNA becomes its most valuable, inimitable asset.\n\nThe philosophy deconstructs the human-AI relationship, advocating for a move from tactical \"prompt engineering\" to the strategic discipline of \"problem formulation.\" It outlines AI's dual role as a \"Socratic sparring partner\" to challenge our biases and a \"guardian angel\" to streamline execution. Grounding these principles in a physical substrate, the document champions a local-first architecture, enabled by model quantization, as the tangible expression of a commitment to user agency, data sovereignty, and privacy. Ultimately, it is a manifesto for designing a future where AI makes us not obsolete, but more profoundly and effectively human.\n"
+  },
+  {
+    "title": "The Principle of Symbiotic Disbelief",
+    "category": "Philosophy",
+    "slug": "symbiotic-disbelief",
+    "markdown_file": "0_canon/principles/Principle_of_Symbiotiotic_Disbelief.md",
+    "podcast_file": "",
+    "abstract": "In the pursuit of Artificial General Intelligence, the prevailing narrative has been one of ascension\u2014a journey toward a machine intelligence so complete that human oversight becomes obsolete. This vision, while compelling in science fiction, is a dangerous fallacy in the practical construction of agentic systems. It presupposes a future of blind trust, where human agency is abdicated in favor of algorithmic omniscience. We propose a more robust, sustainable, and ultimately more powerful paradigm: The Principle of Symbiotic Disbelief.\n"
+  },
+  {
+    "title": "The Emergent Application: An Architecture for Agentic Systems",
+    "category": "Architecture",
+    "slug": "emergent-application",
+    "markdown_file": "Unsorted_Docs/Emergent_Application.md",
+    "podcast_file": "",
+    "abstract": "An Emergent Application is not a single program but a dynamic, decentralized system composed of three core primitives: Sovereign Agents, a Shared State Fabric, and a Protocol for Interaction. Complex, personalized application experiences are not explicitly coded but arise from the real-time collaboration of these components, orchestrated by the user's intent.\n"
   }
 ]
