@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
+import { createVerify } from 'crypto';
 
 export async function POST(req: Request) {
   try {
@@ -18,13 +19,22 @@ export async function POST(req: Request) {
       );
     }
 
-    // Mock verification logic
-    const isVerified =
-      public_key.includes('MOCK_VALID_KEY') && signature.includes('MOCK_VALID_SIGNATURE');
+    // Real cryptographic verification
+    let isVerified = false;
+    try {
+      const verify = createVerify('sha512');
+      verify.update(challenge);
+      verify.end();
+      isVerified = verify.verify(public_key, signature, 'base64');
+    } catch (error) {
+      // Errors in verification (e.g., malformed key) should result in a failure.
+      console.error('Verification error:', error);
+      isVerified = false;
+    }
 
     if (isVerified) {
       const sessionToken = jwt.sign(
-        { sub: 'mock_user_id' },
+        { sub: 'mock_user_id' }, // TODO: Replace with actual user identifier from a trusted source
         process.env.JWT_SESSION_SECRET || 'default-secret',
         { expiresIn: '15m' }
       );
