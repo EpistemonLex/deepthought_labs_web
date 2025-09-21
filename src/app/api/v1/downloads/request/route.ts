@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withApiKeyAuth } from '@/lib/api_auth';
 import jwt from 'jsonwebtoken';
+import { findLicense, findProduct } from '@/lib/database';
 
 async function handler(req: NextRequest) {
   try {
@@ -14,8 +15,8 @@ async function handler(req: NextRequest) {
       );
     }
 
-    // Mock license validation
-    if (!license_key.startsWith('DTL-VALID-')) {
+    const license = findLicense(license_key);
+    if (!license || license.status !== 'active') {
       return NextResponse.json(
         {
           error: {
@@ -24,6 +25,19 @@ async function handler(req: NextRequest) {
           },
         },
         { status: 403 }
+      );
+    }
+
+    const product = findProduct(product_id, version, platform);
+    if (!product) {
+      return NextResponse.json(
+        {
+          error: {
+            code: 'not_found',
+            message: 'The requested product could not be found.',
+          },
+        },
+        { status: 404 }
       );
     }
 
@@ -40,7 +54,7 @@ async function handler(req: NextRequest) {
     }
 
     const token = jwt.sign(
-      { product_id, version, platform },
+      { product_path: product.path },
       secretString,
       { expiresIn: '5m' }
     );
@@ -48,9 +62,8 @@ async function handler(req: NextRequest) {
     const response = {
       download_token: token,
       expires_in: 300,
-      // Mocked file details
-      file_name: `DeepThought-${version}-${platform}.dmg`,
-      file_size: 123456789,
+      file_name: product.path.split('/').pop(),
+      file_size: 123456789, // This can remain mocked for now
     };
 
     return NextResponse.json(response, { status: 200 });

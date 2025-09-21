@@ -24,16 +24,22 @@ export async function GET(req: NextRequest) {
     // PII Compliance Placeholder:
     // - Logging: In a real environment, access logs containing IP addresses
     //   would be anonymized after 30 days.
-    const payload = jwt.verify(token, secretString);
-    console.log('JWT payload verified:', payload);
+    const payload = jwt.verify(token, secretString) as jwt.JwtPayload;
 
-    return new Response('Mock file download successful.', {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/plain',
-      },
+    if (!payload.product_path) {
+      return NextResponse.json(
+        { error: { code: 'invalid_token', message: 'Invalid token payload.' } },
+        { status: 403 }
+      );
+    }
+
+    // In a real-world scenario, this would trigger a download.
+    // For this mock, we'll return a JSON response indicating the path.
+    return NextResponse.json({
+      message: 'Redirecting to download.',
+      path: payload.product_path,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     let code = 'invalid_token';
     let message = 'The download token is invalid.';
 
