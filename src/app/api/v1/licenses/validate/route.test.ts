@@ -1,9 +1,12 @@
 import { POST } from './route';
 import { NextRequest } from 'next/server';
+import { licenses } from '@/lib/database';
 
 const VALID_API_KEY = 'test-api-key';
-const VALID_LICENSE_KEY = 'DTL-VALID-12345';
-const INVALID_LICENSE_KEY = 'DTL-INVALID-12345';
+const VALID_LICENSE = licenses.find((l) => l.status === 'active')!;
+const EXPIRED_LICENSE = licenses.find((l) => l.status === 'expired')!;
+const REVOKED_LICENSE = licenses.find((l) => l.status === 'revoked')!;
+const NON_EXISTENT_KEY = 'DTL-DOES-NOT-EXIST';
 
 const mockRequest = (apiKey: string | null, body: any): NextRequest => {
   const headers = new Headers();
@@ -18,7 +21,7 @@ const mockRequest = (apiKey: string | null, body: any): NextRequest => {
 };
 
 const validBody = {
-  license_key: VALID_LICENSE_KEY,
+  license_key: VALID_LICENSE.key,
   product_id: 'deepthought-pro',
   fingerprint: { type: 'mac_address', value: '00:1A:2B:3C:4D:5E' },
 };
@@ -51,7 +54,7 @@ describe('API - /api/v1/licenses/validate', () => {
   });
 
   it('should return 400 Bad Request if request body is malformed', async () => {
-    const req = mockRequest(VALID_API_KEY, { license_key: VALID_LICENSE_KEY }); // Missing fields
+    const req = mockRequest(VALID_API_KEY, { license_key: VALID_LICENSE.key }); // Missing fields
     const res = await POST(req);
     const data = await res.json();
 
@@ -66,18 +69,42 @@ describe('API - /api/v1/licenses/validate', () => {
 
     expect(res.status).toBe(200);
     expect(data.status).toBe('valid');
-    expect(data.license_key).toBe(VALID_LICENSE_KEY);
+    expect(data.license_key).toBe(VALID_LICENSE.key);
+    expect(data.tier).toBe(VALID_LICENSE.tier);
+    expect(data.expires_at).toBe(VALID_LICENSE.expires_at);
   });
 
-  it('should return 403 Forbidden with invalid status for an invalid license key', async () => {
-    const invalidBody = { ...validBody, license_key: INVALID_LICENSE_KEY };
-    const req = mockRequest(VALID_API_KEY, invalidBody);
+  it('should return 404 Not Found for a non-existent license key', async () => {
+    const body = { ...validBody, license_key: NON_EXISTENT_KEY };
+    const req = mockRequest(VALID_API_KEY, body);
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(404);
+    expect(data.status).toBe('invalid');
+    expect(data.reason_code).toBe('not_found');
+  });
+
+  it('should return 403 Forbidden for an expired license key', async () => {
+    const body = { ...validBody, license_key: EXPIRED_LICENSE.key };
+    const req = mockRequest(VALID_API_KEY, body);
     const res = await POST(req);
     const data = await res.json();
 
     expect(res.status).toBe(403);
     expect(data.status).toBe('invalid');
-    expect(data.reason_code).toBe('not_found');
+    expect(data.reason_code).toBe('expired');
+  });
+
+  it('should return 403 Forbidden for a revoked license key', async () => {
+    const body = { ...validBody, license_key: REVOKED_LICENSE.key };
+    const req = mockRequest(VALID_API_KEY, body);
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(403);
+    expect(data.status).toBe('invalid');
+    expect(data.reason_code).toBe('revoked');
   });
 
   it('should not accept additional PII fields', async () => {
