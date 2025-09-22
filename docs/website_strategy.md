@@ -186,7 +186,14 @@
 
    * 3.2.1 The "Chaos-to-Clarity" Sandbox (Cognitive Load Reduction)
    * 3.2.2 The "Cognitive Juggle" Simulation (Cognitive Load Reduction)
-   * 3.2.3 The "Lesson Plan Amplifier" (Cognitive Augmentation)
+   * 3.2.3 The "Vertical-Specific Use Case Amplifier" (Cognitive Augmentation)
+
+     This demonstration will show how DeepThought acts as a creative and intellectual partner, enhancing a professional's core tasks within their specific domain. The key is to show the tool adapting to a specific user's context. For example, the demo could be presented as:
+       * **For a Teacher:** "The Lesson Plan Amplifier," where they input a topic (e.g., "the water cycle") and the AI suggests creative activities, discussion questions, and assessment ideas.
+       * **For a Marketer:** "The Campaign Idea Generator," where they input a product, and the AI helps brainstorm slogans, target audiences, and channel strategies.
+       * **For a Developer:** "The Code Refactoring Assistant," where they input a function, and the AI suggests improvements for clarity, efficiency, and adherence to best practices.
+
+     This approach powerfully demonstrates the "Amplify, Don't Replace" pillar by showing the AI augmenting the user's own expertise in their chosen field.
    * 3.2.4 The "Metatool" Sandbox (Universal Idea Generator)
   Communicating DeepThought Labs' core philosophical pillars—"Agentic Autonomy" and "Symbiotic Disbelief"—is
    a nuanced challenge. These are not product features but abstract principles of interaction and trust. To

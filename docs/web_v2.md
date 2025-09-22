@@ -10,8 +10,8 @@
   interactive demonstrations, establishing semantic authority for AI systems, and fostering deep human
   engagement. The roadmap is structured into phases, each with specific, actionable tasks for Jules,
   designed to rapidly deploy key engagement features, build out our content ecosystem, and continuously
-  refine the user experience. A key strategic decision is to offer DeepThought free to public school
-  teachers with lifetime support, aligning with our mission of universal cognitive augmentation.
+refine the user experience. A key part of our mission is to ensure the tool is widely accessible, with
+  potential programs to support its adoption in various professional communities.
 
   ---
 
@@ -35,21 +35,19 @@
 
   ---
 
-  Task 1.1: Implement The "Chaos-to-Clarity" Sandbox
+  Task 1.1: Implement The "Chaos-to-Clarity" Animated Storyboard MVP
 
 
-   * Objective: Create the flagship interactive module that allows users to input mental clutter and visually
-     see it transformed into an organized action plan, embodying "cognitive load reduction."
+   * Objective: Create a scroll-driven, animated storyboard for the landing page to visually demonstrate the UKW framework and validate user interest in the "Chaos-to-Clarity" concept.
    * Objective: Develop the gamified simulation where users are overwhelmed by falling tasks, which are then
      effortlessly managed by DeepThought AI, making the abstract concept of mental overload tangible.
    * Objective: Create a simplified, interactive demo that allows users to type a natural language request and
       instantly generates a mini-application or "widget" addressing it, demonstrating DeepThought as a
      "Metatool."
-  Task 1.4: Implement The "Lesson Plan Amplifier" (Cognitive Augmentation)
+  Task 1.4: Implement a Vertical-Specific Demo (Cognitive Augmentation)
 
 
-   * Objective: Create a dedicated interactive module that demonstrates how DeepThought's AI acts as a
-     creative partner, enhancing and expanding upon a professional's core work, specifically for educators.
+   * Objective: Create a dedicated interactive module that demonstrates how DeepThought can adapt to a specific professional's core work (e.g., a teacher, a marketer, a developer), acting as a creative partner to amplify their expertise.
   Objective: Build out the comprehensive content ecosystem and implement technical SEO strategies to
   establish DeepThoughtLabs.ai as the definitive entity for "cognitive augmentation" in the view of both
   human and AI audiences.
@@ -83,11 +81,9 @@
 
    * Objective: Track engagement with the new interactive demonstrations to measure their effectiveness.
    * Objective: Provide a simple way for human users to provide feedback on the website experience.
-  Task 3.3: Implement Teacher Registration/Interest Form
+  Task 3.3: Design "Prerequisite-First" Onboarding Flow
 
-
-   * Objective: Provide a dedicated mechanism for public school teachers to express interest in the free
-     DeepThought offering.
+   * Objective: Create a detailed blueprint for a new, guided download page that requires users to confirm they have a working LLM backend (API Key or LM Studio) before downloading the app.
   Task 4.1: Review and Refine Frontend Error Handling Messages
 
 
