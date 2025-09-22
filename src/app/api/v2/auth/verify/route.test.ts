@@ -2,7 +2,7 @@ import { POST } from './route';
 import { NextRequest } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
-import crypto from 'crypto';
+import crypto, { Verify } from 'crypto';
 
 // --- Test Constants ---
 const JWT_TEST_SECRET = 'a-very-secure-and-long-secret-key-for-testing-purposes-only-do-not-use-in-production';
@@ -34,6 +34,9 @@ const validBody = {
   signature: 'test-signature',
 };
 
+// Define a type for the mock verify object
+type MockVerify = Partial<Verify>;
+
 // --- Test Suite ---
 describe('API - /api/v2/auth/verify', () => {
 
@@ -52,7 +55,7 @@ describe('API - /api/v2/auth/verify', () => {
       update: vi.fn(),
       end: vi.fn(),
       verify: vi.fn().mockReturnValue(true),
-    } as any);
+    } as MockVerify);
     const req = mockRequest(validBody);
     const res = await POST(req);
     const data = await res.json();
@@ -75,7 +78,7 @@ describe('API - /api/v2/auth/verify', () => {
       update: vi.fn(),
       end: vi.fn(),
       verify: vi.fn().mockReturnValue(false),
-    } as any);
+    } as MockVerify);
     const req = mockRequest({ ...validBody, signature: 'invalid-signature' });
     const res = await POST(req);
     const data = await res.json();
@@ -90,7 +93,7 @@ describe('API - /api/v2/auth/verify', () => {
       update: vi.fn(),
       end: vi.fn(),
       verify: vi.fn().mockReturnValue(false),
-    } as any);
+    } as MockVerify);
     const req = mockRequest({ ...validBody, public_key: 'invalid-public-key' });
     const res = await POST(req);
     const data = await res.json();
@@ -150,7 +153,7 @@ describe('API - /api/v2/auth/verify', () => {
       update: vi.fn(),
       end: vi.fn(),
       verify: vi.fn().mockReturnValue(true),
-    } as any);
+    } as MockVerify);
     delete process.env.JWT_SESSION_SECRET; // Temporarily remove the secret
 
     const req = mockRequest(validBody);

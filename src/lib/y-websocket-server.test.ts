@@ -4,7 +4,7 @@ import { WebsocketProvider } from 'y-websocket';
 import WebSocket from 'ws';
 import * as Y from 'yjs';
 import http from 'http';
-import { Server } from 'net';
+import { Server, AddressInfo } from 'net';
 
 describe('y-websocket-server', () => {
   let server: Server;
@@ -17,7 +17,7 @@ describe('y-websocket-server', () => {
         upgradeHandler(req, socket, head);
       });
       server.listen(0, () => {
-        port = (server.address() as any).port;
+        port = (server.address() as AddressInfo).port;
         resolve();
       });
     });
@@ -31,8 +31,8 @@ describe('y-websocket-server', () => {
 
   it('should handle WebSocket connections', async () => {
     const doc = new Y.Doc();
-    const provider = new WebsocketProvider(`ws://localhost:${port}`, 'test-doc-1', doc, { WebSocketPolyfill: WebSocket as any });
-    await new Promise<void>((resolve) => provider.on('status', (event: any) => {
+    const provider = new WebsocketProvider(`ws://localhost:${port}`, 'test-doc-1', doc, { WebSocketPolyfill: WebSocket as typeof WebSocket });
+    await new Promise<void>((resolve) => provider.on('status', (event: { status: string }) => {
       if (event.status === 'connected') {
         expect(provider.wsconnected).toBe(true);
         provider.disconnect();
@@ -44,13 +44,13 @@ describe('y-websocket-server', () => {
   it('should broadcast updates to clients in the same room', async () => {
     const docName = 'test-doc-2';
     const doc1 = new Y.Doc();
-    const provider1 = new WebsocketProvider(`ws://localhost:${port}`, docName, doc1, { WebSocketPolyfill: WebSocket as any });
+    const provider1 = new WebsocketProvider(`ws://localhost:${port}`, docName, doc1, { WebSocketPolyfill: WebSocket as typeof WebSocket });
 
     const doc2 = new Y.Doc();
-    const provider2 = new WebsocketProvider(`ws://localhost:${port}`, docName, doc2, { WebSocketPolyfill: WebSocket as any });
+    const provider2 = new WebsocketProvider(`ws://localhost:${port}`, docName, doc2, { WebSocketPolyfill: WebSocket as typeof WebSocket });
 
-    await new Promise<void>((resolve) => provider1.on('status', (event: any) => event.status === 'connected' && resolve()));
-    await new Promise<void>((resolve) => provider2.on('status', (event: any) => event.status === 'connected' && resolve()));
+    await new Promise<void>((resolve) => provider1.on('status', (event: { status: string }) => event.status === 'connected' && resolve()));
+    await new Promise<void>((resolve) => provider2.on('status', (event: { status: string }) => event.status === 'connected' && resolve()));
 
     const promise = new Promise<void>((resolve) => {
         doc2.getMap('test-map').observe(() => {
@@ -73,21 +73,21 @@ describe('y-websocket-server', () => {
     const docName2 = 'test-doc-4';
 
     const doc1 = new Y.Doc();
-    const provider1 = new WebsocketProvider(`ws://localhost:${port}`, docName1, doc1, { WebSocketPolyfill: WebSocket as any });
+    const provider1 = new WebsocketProvider(`ws://localhost:${port}`, docName1, doc1, { WebSocketPolyfill: WebSocket as typeof WebSocket });
 
     const doc2 = new Y.Doc();
-    const provider2 = new WebsocketProvider(`ws://localhost:${port}`, docName2, doc2, { WebSocketPolyfill: WebSocket as any });
+    const provider2 = new WebsocketProvider(`ws://localhost:${port}`, docName2, doc2, { WebSocketPolyfill: WebSocket as typeof WebSocket });
 
     const doc3 = new Y.Doc();
-    const provider3 = new WebsocketProvider(`ws://localhost:${port}`, docName1, doc3, { WebSocketPolyfill: WebSocket as any });
+    const provider3 = new WebsocketProvider(`ws://localhost:${port}`, docName1, doc3, { WebSocketPolyfill: WebSocket as typeof WebSocket });
 
     const spy = vi.fn();
     doc2.getMap('test-map').observe(spy);
 
 
-    await new Promise<void>((resolve) => provider1.on('status', (event: any) => event.status === 'connected' && resolve()));
-    await new Promise<void>((resolve) => provider2.on('status', (event: any) => event.status === 'connected' && resolve()));
-    await new Promise<void>((resolve) => provider3.on('status', (event: any) => event.status === 'connected' && resolve()));
+    await new Promise<void>((resolve) => provider1.on('status', (event: { status: string }) => event.status === 'connected' && resolve()));
+    await new Promise<void>((resolve) => provider2.on('status', (event: { status: string }) => event.status === 'connected' && resolve()));
+    await new Promise<void>((resolve) => provider3.on('status', (event: { status: string }) => event.status === 'connected' && resolve()));
 
     const promise = new Promise<void>((resolve) => {
         doc3.getMap('test-map').observe(() => {

@@ -1,6 +1,7 @@
 import http from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import { setupWSConnection } from './y-websocket-utils';
+import type { Socket } from 'net';
 
 const wss = new WebSocketServer({ noServer: true });
 
@@ -10,7 +11,7 @@ wss.on('connection', (conn: WebSocket, req: http.IncomingMessage) => {
 
 export const upgradeHandler = (
   req: http.IncomingMessage,
-  socket: any,
+  socket: Socket,
   head: Buffer
 ) => {
   wss.handleUpgrade(req, socket, head, (ws) => {

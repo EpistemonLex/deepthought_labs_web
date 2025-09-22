@@ -4,14 +4,11 @@ import * as awarenessProtocol from 'y-protocols/awareness';
 import * as encoding from 'lib0/encoding';
 import * as decoding from 'lib0/decoding';
 import * as map from 'lib0/map';
-import * as eventloop from 'lib0/eventloop';
-import { Server, WebSocket } from 'ws';
+import { WebSocket } from 'ws';
 import { IncomingMessage } from 'http';
 
 const wsReadyStateConnecting = 0;
 const wsReadyStateOpen = 1;
-const wsReadyStateClosing = 2;
-const wsReadyStateClosed = 3;
 
 const gcEnabled = process.env.GC !== 'false' && process.env.GC !== '0';
 
@@ -20,7 +17,14 @@ export const docs = new Map<string, WSSharedDoc>();
 const messageSync = 0;
 const messageAwareness = 1;
 
-const updateHandler = (update: Uint8Array, _origin: any, doc: WSSharedDoc) => {
+// Define a type for the awareness change event
+interface AwarenessChangeEvent {
+  added: number[];
+  updated: number[];
+  removed: number[];
+}
+
+const updateHandler = (update: Uint8Array, _origin: unknown, doc: WSSharedDoc) => {
   const encoder = encoding.createEncoder();
   encoding.writeVarUint(encoder, messageSync);
   syncProtocol.writeUpdate(encoder, update);
@@ -41,7 +45,7 @@ export class WSSharedDoc extends Y.Doc {
     this.awareness.setLocalState(null);
 
     const awarenessChangeHandler = (
-      { added, updated, removed }: any,
+      { added, updated, removed }: AwarenessChangeEvent,
       conn: WebSocket | null
     ) => {
       const changedClients = added.concat(updated, removed);
@@ -108,7 +112,7 @@ const messageListener = (
         break;
       }
     }
-  } catch (err) {
+  } catch (err: unknown) {
     console.error(err);
     doc.emit('error', [err]);
   }
@@ -140,9 +144,11 @@ const send = (doc: WSSharedDoc, conn: WebSocket, m: Uint8Array) => {
   }
   try {
     conn.send(m, {}, (err) => {
-      err != null && closeConn(doc, conn);
+      if (err) {
+        closeConn(doc, conn);
+      }
     });
-  } catch (e) {
+  } catch (e: unknown) {
     closeConn(doc, conn);
   }
 };
@@ -172,7 +178,7 @@ export const setupWSConnection = (
       pongReceived = false;
       try {
         conn.ping();
-      } catch (e) {
+      } catch (e: unknown) {
         closeConn(doc, conn);
         clearInterval(pingInterval);
       }

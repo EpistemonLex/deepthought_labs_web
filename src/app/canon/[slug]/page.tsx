@@ -53,6 +53,7 @@ export default function CanonDocument({ params }: { params: { slug: string } }) 
               <h2 className="text-2xl font-bold mb-2">Listen to the Podcast</h2>
               <audio controls className="w-full">
                 <source src={`/podcasts/${doc.podcast_file}`} type="audio/mpeg" />
+                <track kind="captions" />
                 Your browser does not support the audio element.
               </audio>
             </div>

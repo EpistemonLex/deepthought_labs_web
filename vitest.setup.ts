@@ -5,7 +5,7 @@
 // can be problematic in the JSDOM environment used by Vitest.
 import { TextEncoder, TextDecoder } from 'util';
 global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder as any;
+global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 
 
 import '@testing-library/jest-dom';
