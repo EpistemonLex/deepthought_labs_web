@@ -8,6 +8,14 @@ import { ApiError } from '@/lib/api';
 // Re-using the same base URL from api.ts for constructing the download link
 const SOVEREIGN_API_BASE_URL = process.env.NEXT_PUBLIC_SOVEREIGN_API_URL || 'http://localhost:8000/api/v1';
 
+/**
+ * A form for users to request a software download link.
+ *
+ * The user provides a license key, product ID, version, and platform.
+ * The form submits this information to an API, and upon a successful response,
+ * provides a download link for the requested software. It handles loading states,
+ * errors, and displays the final download information.
+ */
 export default function DownloadRequestForm() {
   const [licenseKey, setLicenseKey] = useState('');
   const [productId, setProductId] = useState('');

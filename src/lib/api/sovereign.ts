@@ -1,23 +1,40 @@
 import { ApiError } from '../api';
 
+/**
+ * Defines the shape of the response from the license validation endpoint.
+ */
 export interface LicenseValidationResponse {
+  /** The status of the validation request (e.g., 'valid', 'invalid'). */
   status: string;
+  /** A human-readable message describing the result. */
   message: string;
+  /** The license tier, if applicable. */
   tier?: string;
+  /** The expiration date of the license, if applicable. */
   expires_at?: string;
-  // any other fields from the validation response
 }
 
+/**
+ * Defines the shape of the response from the download request endpoint.
+ */
 export interface DownloadRequestResponse {
+  /** The status of the download request. */
   status: string;
-  message: string;
+  /** A message describing the outcome of the request. */
+  message:string;
+  /** The token to use for downloading the file, if the request is successful. */
   download_token?: string;
+  /** The name of the file to be downloaded. */
   file_name?: string;
-  file_size?: number; // in bytes
-  // any other fields from the download request response
+  /** The size of the file in bytes. */
+  file_size?: number;
 }
 
+/**
+ * Defines the shape of the response from the signature verification endpoint.
+ */
 export interface VerifySignatureResponse {
+  /** A session token that can be used for subsequent authenticated requests. */
   session_token: string;
 }
 

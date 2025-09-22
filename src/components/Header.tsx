@@ -3,12 +3,23 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
+/**
+ * A navigation link component.
+ * @param {object} props - The component props.
+ * @param {string} props.href - The link's destination.
+ * @param {React.ReactNode} props.children - The content to display within the link.
+ */
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
   <Link href={href} className="block sm:inline-block text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
     {children}
   </Link>
 );
 
+/**
+ * The main header for the application.
+ * It includes the site title and navigation links.
+ * On smaller screens, it features a hamburger menu to toggle navigation visibility.
+ */
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
