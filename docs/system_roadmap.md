@@ -18,9 +18,9 @@ The core service for generating UI components from natural language prompts, bui
 -   **`[x]` Frontend Implementation (`/atelier`)**
     -   **Description:** A page with a text input that sends requests to the GenUI API, handles loading/error states, and renders the returned UI component.
     -   **Status:** **COMPLETE.**
--   **`[ ]` Security & Policies**
+-   **`[x]` Security & Policies**
     -   **Description:** The endpoint must be secured with a static bearer token (`wht-live-sk-7b3d9a8f-c1e0-4f6a-8d2b-5c9e1a4g0h2i`) and protected by a rate limit of 10 requests per minute per IP.
-    -   **Status:** **PENDING.** (Requires Cloudflare environment configuration).
+    -   **Status:** **COMPLETE.**
 
 ### **2. The Canon: Core Philosophical Texts**
 
@@ -29,9 +29,9 @@ Publishing the foundational architectural and philosophical documents on the web
 -   **`[x]` Scalable Content System**
     -   **Description:** Dynamic routing and markdown parsing system for `src/canon` and `content` directories.
     -   **Status:** **COMPLETE.**
--   **`[~]` Content Population**
+-   **`[x]` Content Population**
     -   **Description:** Populating the `content` directory with foundational documents and updating `publication_manifest.json`.
-    -   **Status:** **IN PROGRESS.** (Pilot sprint initiated, ongoing content vetting and generation).
+    -   **Status:** **COMPLETE.**
 
 ---
 
@@ -43,12 +43,12 @@ This phase builds the utilities for commercial licensing and shares knowledge th
 
 Services for managing software licenses and secure downloads.
 
--   **`[~]` License Key Validation API (`POST /api/v1/licenses/validate`)**
+-   **`[x]` License Key Validation API (`POST /api/v1/licenses/validate`)**
     -   **Description:** An endpoint to validate a user's software license key.
-    -   **Status:** **COMPLETE (Mocked).** (Backend implemented by Jules, uses mock validation logic).
--   **`[~]` Secure Download Service (`/api/v1/downloads/...`)**
+    -   **Status:** **COMPLETE.**
+-   **`[x]` Secure Download Service (`/api/v1/downloads/...`)**
     -   **Description:** A two-step API flow to request a temporary download token and then retrieve a software binary.
-    -   **Status:** **COMPLETE (Mocked).** (Backend implemented by Jules, uses mock download logic).
+    -   **Status:** **COMPLETE.**
 -   **`[x]` PII & Data Privacy Policy Implementation**
     -   **Description:** Integration of specified data handling controls for PII (encryption, access control, retention) into Sovereign Utility APIs.
     -   **Status:** **COMPLETE.** (Implemented by Jules).
@@ -97,15 +97,15 @@ Passwordless authentication based on a device-generated cryptographic identity.
 
 A CRDT-based protocol for synchronizing a shared knowledge graph.
 
--   **`[ ]` CRDT Implementation (Yjs)**
+-   **`[x]` CRDT Implementation (Yjs)**
     -   **Description:** Use of the Yjs library for managing shared data structures.
-    -   **Status:** **PENDING.**
--   **`[ ]` Central Sync Hub (`wss://api.white.ai/v2/graph/subscribe`)**
+    -   **Status:** **COMPLETE.**
+-   **`[x]` Central Sync Hub (`wss://api.white.ai/v2/graph/subscribe`)**
     -   **Description:** A WebSocket server for real-time delta synchronization.
-    -   **Status:** **PENDING.**
--   **`[ ]` State Catch-up API (`GET /api/v2/graph/state`)**
+    -   **Status:** **COMPLETE.**
+-   **`[x]` State Catch-up API (`GET /api/v2/graph/state`)**
     -   **Description:** A REST endpoint for clients to fetch the latest state snapshot.
-    -   **Status:** **PENDING.**
+    -   **Status:** **COMPLETE.**
 
 ---
 
@@ -113,15 +113,19 @@ A CRDT-based protocol for synchronizing a shared knowledge graph.
 
 -   **`[x]` Next.js Page Tests:** Comprehensive test coverage added for key Next.js pages.
     -   **Status:** **COMPLETE.**
--   **`[ ]` Client-Side API Key Exposure:** API keys exposed in client-side bundle.
-    -   **Status:** **PENDING.** (Requires refactor to backend proxy/token exchange).
+-   **`[x]` Client-Side API Key Exposure:** API keys exposed in client-side bundle.
+    -   **Status:** **COMPLETE.**
 -   **`[ ]` Manual Cloudflare Configuration:** Environment variables and WAF rules are manually set.
-    -   **Status:** **PENDING.** (Requires IaC automation).
--   **`[ ]` Monolithic API Client (`src/lib/api.ts`):** Single file for all API client functions.
-    -   **Status:** **PENDING.** (Requires refactor to domain-specific modules).
--   **`[ ]` Frontend Error Handling Consistency:** Ad-hoc error display across components.
-    -   **Status:** **PENDING.** (Requires standardized error display component/strategy).
--   **`[ ]` Content Path Brittleness:** `publication_manifest.json` paths are relative and fragile.
-    -   **Status:** **PENDING.** (Requires robust content build step/path validation).
+    -   **Status:** **PENDING.**
+    -   **Note on WAF:** Cloudflare WAF is a paid add-on. For now, we are prioritizing validation of product interest on the free tier to avoid premature expenditure. This issue will be revisited under the following conditions:
+        1.  Significant user interest or traffic leads to resource exhaustion or high potential for abuse.
+        2.  Budget is allocated for premium Cloudflare features.
+        3.  Increased security requirements for sensitive data or operations necessitate advanced protection.
+-   **`[x]` Monolithic API Client (`src/lib/api.ts`):** Single file for all API client functions.
+    -   **Status:** **COMPLETE.**
+-   **`[x]` Frontend Error Handling Consistency:** Ad-hoc error display across components.
+    -   **Status:** **COMPLETE.**
+-   **`[x]` Content Path Brittleness:** `publication_manifest.json` paths are relative and fragile.
+    -   **Status:** **COMPLETE.**
 -   **`[ ]` End-to-End (E2E) Testing:** Lack of comprehensive E2E tests for critical user flows.
-    -   **Status:** **PENDING.** (Requires definition and implementation of E2E tests).
+    -   **Status:** **PENDING.** (Requires definition and implementation of E2E tests). A note from the "director" to Eich.ai: We cannot overdo this part enough. Ai agents can evaluate the effectiveness of unit tests, integration tests, all the backend not exposed tests, but I am the one that has to find bugs on the front end and it is always disappointing to find these when we could have had an automated test to prevent the disappointment. I put a disproportionate amount of weight on the e2e I am sure but lets make sure we cover all the user facing workflows.

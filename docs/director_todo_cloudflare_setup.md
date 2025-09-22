@@ -22,6 +22,9 @@ To interact with Cloudflare Workers AI, the backend service needs specific crede
         3.  The Account ID is typically found on the right-hand sidebar under "API" or "Account Details."
         4.  Alternatively, it's part of the URL when you're in your account dashboard (e.g., `https://dash.cloudflare.com/<ACCOUNT_ID>/...`).
 
+copied account ID from cloudflare.com
+        0d07fec381db8c7e1dae61329c4eaf26
+
 *   **`CLOUDFLARE_API_TOKEN`:**
     *   **What it is:** A specific API Token with permissions to run AI models.
     *   **How to get it:**
@@ -35,6 +38,9 @@ To interact with Cloudflare Workers AI, the backend service needs specific crede
             *   **Account:** `Account Settings` -> `Read` (might be needed for some SDKs, but `Workers AI Edit` is primary).
         7.  **Client IP Address Filtering (Optional but Recommended):** For enhanced security, you can restrict this token to specific IP addresses if your deployment environment has a static IP.
         8.  **Save the Token:** Cloudflare will display the token **only once**. Copy it immediately and store it securely.
+workers AI api key
+mwySaRzYriWHfEHGAZUSLsWwaNRoVKO3BUaa7Ilf
+
 
 ### **2. Define GenUI Service API Token**
 
@@ -58,8 +64,11 @@ These secrets must be securely injected into your deployed application.
         *   `CLOUDFLARE_API_TOKEN` = `(Your AI API Token)`
         *   `GENUI_API_TOKEN` = `(Your Self-Generated GenUI API Token)`
         *   `INTEGRATOR_API_KEY` = `(Your Self-Generated API Key for Sovereign Utility APIs)`
+        dtl-integrator-sk-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
         *   `JWT_DOWNLOAD_SECRET` = `(Your Self-Generated Secret for Download JWTs)`
+        another-secure-download-jwt-key-uvw987xyz654abc321def098ghi765jkl
         *   `JWT_SESSION_SECRET` = `(Your Self-Generated Secret for Session JWTs - for V2 Auth)`
+        new-session-jwt-secret-def987ghi654jkl321mno098pqr765stu432vwx
     5.  Ensure these are set for the **Production** environment and any **Preview** environments you use.
 
 ### **4. Configure Cloudflare WAF Rate Limiting for GenUI**
