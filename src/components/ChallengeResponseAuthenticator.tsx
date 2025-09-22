@@ -5,6 +5,15 @@ import { verifySignature } from '@/lib/api/sovereign';
 import { ApiError } from '@/lib/api';
 import ErrorMessage from './ErrorMessage';
 
+/**
+ * A component that handles a simulated challenge-response authentication flow.
+ *
+ * This component guides the user through a mock login process:
+ * 1. A challenge string is generated.
+ * 2. It simulates a request to a desktop application to sign the challenge.
+ * 3. It sends the signed challenge to a verification service.
+ * 4. It displays the login status, session token on success, or an error message on failure.
+ */
 export default function ChallengeResponseAuthenticator() {
   const [status, setStatus] = useState('Idle');
   const [error, setError] = useState<string | null>(null);

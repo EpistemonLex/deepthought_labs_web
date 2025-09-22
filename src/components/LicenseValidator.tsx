@@ -5,6 +5,13 @@ import ErrorMessage from './ErrorMessage';
 import { validateLicense, LicenseValidationResponse } from '@/lib/api/sovereign';
 import { ApiError } from '@/lib/api';
 
+/**
+ * A component that provides a form to validate a software license key.
+ *
+ * It takes a license key and a product ID as input, sends them to a validation API,
+ * and displays the result to the user. It includes handling for loading states and errors.
+ * A basic device fingerprint is generated from the user agent and language.
+ */
 export default function LicenseValidator() {
   const [licenseKey, setLicenseKey] = useState('');
   const [productId, setProductId] = useState('');
