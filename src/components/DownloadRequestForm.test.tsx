@@ -90,7 +90,9 @@ describe('DownloadRequestForm', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('error-message')).toBeInTheDocument();
-      expect(screen.getByText('This license is not eligible for downloads.')).toBeInTheDocument();
+      // Check for the new, more user-friendly error message.
+      expect(screen.getByText(/issue with the information you provided/i)).toBeInTheDocument();
+      expect(screen.getByText(/(Details: This license is not eligible for downloads.)/i)).toBeInTheDocument();
     });
   });
 });

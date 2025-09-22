@@ -83,7 +83,9 @@ describe('LicenseValidator', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('error-message')).toBeInTheDocument();
-      expect(screen.getByText('Invalid license key.')).toBeInTheDocument();
+      // Check for the new, more user-friendly error message.
+      expect(screen.getByText(/An unexpected issue occurred/i)).toBeInTheDocument();
+      expect(screen.getByText(/(Details: Invalid license key.)/i)).toBeInTheDocument();
     });
   });
 });

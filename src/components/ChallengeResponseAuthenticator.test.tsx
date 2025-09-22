@@ -55,7 +55,10 @@ describe('ChallengeResponseAuthenticator', () => {
     await waitFor(() => {
       expect(screen.getByText('Status: Failed')).toBeInTheDocument();
       expect(screen.getByTestId('error-message')).toBeInTheDocument();
-      expect(screen.getByText('Invalid signature')).toBeInTheDocument();
+      // Check for the new, more user-friendly error message.
+      // We can check for a substring to make the test less brittle.
+      expect(screen.getByText(/couldn't verify your session/i)).toBeInTheDocument();
+      expect(screen.getByText(/(Details: Invalid signature)/i)).toBeInTheDocument();
     });
   });
 });

@@ -27,12 +27,10 @@ export default function DownloadRequestForm() {
       const response = await requestDownload(licenseKey, productId, version, platform);
       setDownloadResponse(response);
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
-      } else if (err instanceof Error) {
-        setError(err.message);
+      if (err instanceof ApiError || err instanceof Error) {
+        setError(`There seems to be an issue with the information you provided. Please review your input and try again. (Details: ${err.message})`);
       } else {
-        setError('An unexpected error occurred.');
+        setError('Something went wrong on our end. We\'ve been notified and are looking into it. Please try again in a few moments.');
       }
     } finally {
       setIsLoading(false);

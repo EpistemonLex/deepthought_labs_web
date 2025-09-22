@@ -37,12 +37,10 @@ export default function ChallengeResponseAuthenticator() {
       setSessionToken(response.session_token);
       setStatus('Login successful!');
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
-      } else if (err instanceof Error) {
-        setError(err.message);
+      if (err instanceof ApiError || err instanceof Error) {
+        setError(`We couldn't verify your session. Please try logging in again. If the problem continues, our support team is here to help. (Details: ${err.message})`);
       } else {
-        setError('An unknown error occurred.');
+        setError('Something went wrong on our end. We\'ve been notified and are looking into it. Please try again in a few moments.');
       }
       setStatus('Failed');
     }

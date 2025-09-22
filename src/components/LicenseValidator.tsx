@@ -24,12 +24,10 @@ export default function LicenseValidator() {
       const response = await validateLicense(licenseKey, productId, fingerprint);
       setValidationResponse(response);
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
-      } else if (err instanceof Error) {
-        setError(err.message);
+      if (err instanceof ApiError || err instanceof Error) {
+        setError(`An unexpected issue occurred while processing your request. Please try again. If the problem continues, this information may be helpful for support. (Details: ${err.message})`);
       } else {
-        setError('An unexpected error occurred.');
+        setError('Something went wrong on our end. We\'ve been notified and are looking into it. Please try again in a few moments.');
       }
     } finally {
       setIsLoading(false);

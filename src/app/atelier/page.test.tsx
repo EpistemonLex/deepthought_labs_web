@@ -93,7 +93,7 @@ describe('Atelier Page', () => {
       expect(screen.getByTestId('error-message')).toBeInTheDocument();
       expect(
         screen.getByText(
-          'Service Unavailable: Service Unavailable. The AI service may be temporarily down.',
+          /It looks like the AI service is currently unavailable/i,
         ),
       ).toBeInTheDocument();
     });

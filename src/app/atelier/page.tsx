@@ -13,7 +13,7 @@ export default function Atelier() {
 
   const handleGenerateUI = async () => {
     if (!prompt.trim()) {
-      setError('Please enter a description for the UI you want to generate.');
+      setError("To get started, please describe the UI you'd like to create in the text box above.");
       return;
     }
     setIsLoading(true);
@@ -30,32 +30,32 @@ export default function Atelier() {
         switch (err.status) {
           case 400:
             setError(
-              `Bad Request: ${err.message}. Please check your input.`,
+              `There seems to be an issue with the information you provided. Please review your input and try again. (Details: ${err.message})`,
             );
             break;
           case 401:
             setError(
-              `Authentication Error: ${err.message}. Please contact the administrator.`,
+              `We couldn't verify your session. Please try logging in again. If the problem continues, our support team is here to help. (Details: ${err.message})`,
             );
             break;
           case 429:
             setError(
-              `Rate Limit Exceeded: ${err.message}. Please wait before trying again.`,
+              `You've made a few too many requests in a short time. To protect the service, we need to ask you to please wait a moment before trying again.`,
             );
             break;
           case 503:
             setError(
-              `Service Unavailable: ${err.message}. The AI service may be temporarily down.`,
+              `It looks like the AI service is currently unavailable or very busy. We're working on it, and it should be back online shortly. Please try again in a few minutes.`,
             );
             break;
           default:
-            setError(`An API error occurred: ${err.message}`);
+            setError(`An unexpected issue occurred while processing your request. Please try again. If the problem continues, this information may be helpful for support. (Details: ${err.message})`);
             break;
         }
       } else if (err instanceof Error) {
-        setError(`An unexpected error occurred: ${err.message}`);
+        setError(`An unexpected issue occurred while processing your request. Please try again. If the problem continues, this information may be helpful for support. (Details: ${err.message})`);
       } else {
-        setError('An unknown error occurred.');
+        setError('Something went wrong on our end. We\'ve been notified and are looking into it. Please try again in a few moments.');
       }
     } finally {
       setIsLoading(false);
