@@ -43,7 +43,7 @@ export function getMarkdownFilePath(slug: string): string | null {
   return filePath;
 }
 
-export function getDocument(slug: string) {
+export async function getDocument(slug: string) {
     const manifest = getManifest();
     const docEntry = manifest.find((doc) => doc.slug === slug);
 
@@ -51,14 +51,14 @@ export function getDocument(slug: string) {
         return null;
     }
 
-    const filePath = getMarkdownFilePath(slug);
+    const filePath = path.resolve(path.join(process.cwd(), 'src', 'canon'), docEntry.markdown_file);
 
-    if (!filePath || !fs.existsSync(filePath)) {
+    if (!fs.existsSync(filePath)) {
         console.error(`Markdown file not found for slug ${slug} at path: ${filePath}`);
         return null;
     }
 
-    const fileContents = fs.readFileSync(filePath, 'utf8');
+    const fileContents = await fs.promises.readFile(filePath, 'utf8');
 
     return {
         ...docEntry,

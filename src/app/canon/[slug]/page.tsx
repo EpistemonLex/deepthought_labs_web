@@ -1,9 +1,8 @@
-// src/app/canon/[slug]/page.tsx
 import matter from 'gray-matter';
 import ReactMarkdown from 'react-markdown';
 import { notFound } from 'next/navigation';
 import Header from '../../../components/Header';
-import { getManifest, getDocument as getDocumentData } from '../../../lib/content-utils';
+import { getManifest, getDocument } from '../../../lib/content-utils';
 
 // This function tells Next.js which slugs (routes) to pre-render at build time.
 export async function generateStaticParams() {
@@ -13,26 +12,22 @@ export async function generateStaticParams() {
   }));
 }
 
-// This function fetches and prepares the data for a specific document.
-function getDocument(slug: string) {
-    const docData = getDocumentData(slug);
+export default async function CanonDocument(props: PageProps<'/canon/[slug]'>) {
+  const { slug } = await props.params;
+  const docData = await getDocument(slug);
 
-    if (!docData) {
-        return null;
-    }
+  if (!docData) {
+    notFound();
+  }
 
-    // Metadata is from the manifest, content is from the markdown file.
-    const { content: rawContent, ...meta } = docData;
-    const { content: parsedContent } = matter(rawContent);
+  // Metadata is from the manifest, content is from the markdown file.
+  const { content: rawContent, ...meta } = docData;
+  const { content: parsedContent } = matter(rawContent);
 
-    return {
-        ...meta,
-        content: parsedContent,
-    };
-}
-
-export default function CanonDocument({ params }: { params: { slug: string } }) {
-  const doc = getDocument(params.slug);
+  const doc = {
+    ...meta,
+    content: parsedContent,
+  };
 
   if (!doc) {
     notFound();

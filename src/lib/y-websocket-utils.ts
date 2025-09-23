@@ -114,7 +114,6 @@ const messageListener = (
     }
   } catch (err: unknown) {
     console.error(err);
-    doc.emit('error', [err]);
   }
 };
 

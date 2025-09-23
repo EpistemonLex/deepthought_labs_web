@@ -4,7 +4,8 @@
 // Polyfill for TextEncoder, which is required by the 'jose' library and
 // can be problematic in the JSDOM environment used by Vitest.
 import { TextEncoder, TextDecoder } from 'util';
-global.TextEncoder = TextEncoder;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+global.TextEncoder = TextEncoder as any;
 global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 
 
