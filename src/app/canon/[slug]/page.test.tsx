@@ -4,7 +4,6 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import CanonDocumentPage, { generateStaticParams } from './page';
 import { notFound } from 'next/navigation';
 import * as contentUtils from '../../../lib/content-utils';
-import matter from 'gray-matter';
 
 // Mock dependencies
 vi.mock('../../../components/Header', () => ({
@@ -15,10 +14,8 @@ vi.mock('next/navigation', () => ({
   notFound: vi.fn(),
 }));
 vi.mock('../../../lib/content-utils');
-vi.mock('gray-matter');
 
 const mockedContentUtils = contentUtils as vi.Mocked<typeof contentUtils>;
-const mockedMatter = matter as unknown as vi.Mocked<typeof matter>;
 
 describe('Canon Document Page', () => {
   afterEach(() => {
@@ -26,10 +23,8 @@ describe('Canon Document Page', () => {
   });
 
   describe('Page Rendering', () => {
-    it('renders the document content when a document is found', () => {
+    it('renders the document content when a document is found', async () => {
       // Arrange
-      const mockRawContent = '## Markdown Content\n\nThis is the body of the document.';
-      const mockParsedContent = 'Parsed Markdown Content';
       const mockDocData = {
         title: 'Test Document',
         category: 'Testing',
@@ -37,35 +32,35 @@ describe('Canon Document Page', () => {
         markdown_file: 'test.md',
         podcast_file: 'test-podcast.mp3',
         abstract: 'An abstract for our test document.',
-        content: mockRawContent,
+        content: '## Markdown Content\n\nThis is the body of the document.',
       };
-
-      mockedContentUtils.getDocument.mockReturnValue(mockDocData);
-      mockedMatter.mockReturnValue({
-          content: mockParsedContent,
-          data: {},
-          excerpt: '',
-          isEmpty: false
-      });
+      mockedContentUtils.getDocument.mockResolvedValue(mockDocData);
 
       // Act
-      render(<CanonDocumentPage params={{ slug: 'test-doc' }} />);
+      // Await the component because it's an async Server Component
+      const PageComponent = await CanonDocumentPage({ params: { slug: 'test-doc' } });
+      render(PageComponent);
 
       // Assert
       expect(screen.getByRole('heading', { name: 'Test Document', level: 1 })).toBeInTheDocument();
       expect(screen.getByText('Category: Testing')).toBeInTheDocument();
       expect(screen.getByText('An abstract for our test document.')).toBeInTheDocument();
       expect(screen.getByRole('heading', { name: 'Listen to the Podcast' })).toBeInTheDocument();
-      expect(screen.getByText(mockParsedContent)).toBeInTheDocument();
+      // Note: ReactMarkdown's output might not be a direct text match.
+      // We check for a key part of the content instead.
+      expect(screen.getByText('This is the body of the document.')).toBeInTheDocument();
     });
 
-    it('calls notFound when getDocument returns null', () => {
+    it('calls notFound when getDocument returns null', async () => {
       // Arrange
-      mockedContentUtils.getDocument.mockReturnValue(null);
+      mockedContentUtils.getDocument.mockResolvedValue(null);
 
       // Act & Assert
-      // The notFound() function throws an error, so we test that the component throws.
-      expect(() => render(<CanonDocumentPage params={{ slug: 'non-existent' }} />)).toThrow();
+      // We expect the async component function itself to throw the error triggered by notFound()
+      await expect(CanonDocumentPage({ params: { slug: 'non-existent' } }))
+        .rejects
+        .toThrow();
+      
       expect(notFound).toHaveBeenCalled();
     });
   });

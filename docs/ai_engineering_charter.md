@@ -48,22 +48,37 @@ We adhere to a strict fail-fast philosophy. Automated checks are executed early 
 
 #### 4.2 Tooling and Definitive Quality Gate
 
-This project uses `npm` for dependency management and script execution. Project-specific commands are defined in the `scripts` section of the `package.json` file.
+This project uses `pnpm` for dependency management and script execution. Project-specific commands are defined in the `scripts` section of the `package.json` file.
 
-The single, comprehensive command `npm run verify` serves as the definitive quality gate for all logical changes. This command, which must be created, should encapsulate:
-1.  **Linting:** `npm run lint` (using ESLint)
-2.  **Type Checking & Building:** `npm run build` (using the TypeScript compiler via Next.js)
-3.  **Testing:** `npm run test` (executing the full test suite)
+The single, comprehensive command `pnpm run verify` serves as the definitive quality gate for all logical changes. This command, which must be created, should encapsulate:
+1.  **Linting:** `pnpm run lint` (using ESLint)
+2.  **Type Checking & Building:** `pnpm run build` (using the TypeScript compiler via Next.js)
+3.  **Testing:** `pnpm run test` (executing the full test suite)
 
 This command must be run and pass before any code is committed or merged.
 
 #### 4.3 Environment Management
 
-A consistent and reproducible development environment is foundational to our "Quality enables Velocity" principle.
-*   **Initial Setup:** `npm install`
-*   **Adding a Dependency:** `npm install [package-name]`
-*   **Adding a Dev Dependency:** `npm install [package-name] --save-dev`
-*   **Updating Dependencies:** Regularly run `npm outdated` to review potential upgrades and use `npm update` or `npm install [package-name]@latest` to apply them, followed by thorough verification.
+A consistent and reproducible development environment is foundational to our "Quality enables Velocity" principle. This project uses `pnpm` to manage dependencies efficiently and keep the project directory clean.
+*   **Initial Setup:** `pnpm install`
+*   **Adding a Dependency:** `pnpm add [package-name]`
+*   **Adding a Dev Dependency:** `pnpm add -D [package-name]`
+*   **Updating Dependencies:** Regularly run `pnpm outdated` to review potential upgrades and use `pnpm update` to apply them, followed by thorough verification.
+
+#### 4.4 Environment and Hardware Strategy
+
+To maintain a clean, high-performance, and reproducible development environment that mirrors a typical user setup, we adhere to a specific hardware and directory structure. This strategy isolates the operating system, applications, and project data to prevent conflicts and simplify backups.
+
+*   **System Drive (C:):** Reserved exclusively for the Windows operating system and its temporary files. This creates a stable, isolated foundation.
+*   **Applications Drive (D:):** Contains all installed development tools and applications (e.g., Node.js, Python, Git, VS Code). Global tool installations (like `pnpm`) are also configured to reside here.
+*   **Hot Drive / Cache (E:):** A high-performance drive dedicated to transient and cache data. This includes:
+    *   The global `pnpm` content-addressable store (`E:\pnpm-store`).
+    *   Centralized Python virtual environments.
+    *   The `pip` package cache.
+*   **Project Drive (D:):** Project source code is kept on the `D:` drive (e.g., `D:\deepthought_web`). Project directories are kept clean of dependencies, which are linked from the `E:` drive cache.
+*   **Data and Backups (F:):** Reserved for Gitea repositories, system images, and file history.
+
+This architecture ensures that project folders remain lean and focused on source code, while performance-intensive cache operations are handled by the dedicated hot drive.
 
 ### 5. The Seven Pillars of Testing Excellence
 

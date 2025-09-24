@@ -147,7 +147,8 @@ const send = (doc: WSSharedDoc, conn: WebSocket, m: Uint8Array) => {
         closeConn(doc, conn);
       }
     });
-  } catch (e: unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_e: unknown) {
     closeConn(doc, conn);
   }
 };
@@ -177,7 +178,8 @@ export const setupWSConnection = (
       pongReceived = false;
       try {
         conn.ping();
-      } catch (e: unknown) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_e: unknown) {
         closeConn(doc, conn);
         clearInterval(pingInterval);
       }

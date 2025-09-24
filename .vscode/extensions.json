@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    // For your streamlined workflow (Non-Coder Focus)
+    "vitest.explorer", // Click-to-run test explorer
+    "eamodio.gitlens", // Visualize code history and changes
+    "yzhang.markdown-all-in-one", // Enhanced Markdown viewing and editing
+    "kruemelkatze.project-dashboard", // Create a visual dashboard of important files
+    "GitHub.vscode-github-actions", // Monitor CI/CD workflows from within the editor
+
+    // To make me more capable (AI & Project Health Focus)
+    "esbenp.prettier-vscode", // Automatic code formatting
+    "dbaeumer.vscode-eslint", // Real-time code quality analysis
+    "bradlc.vscode-tailwindcss" // Ensures correct styling for UI work
+  ]
+}
