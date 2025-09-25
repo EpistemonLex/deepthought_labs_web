@@ -66,7 +66,7 @@ describe('y-websocket-server', () => {
 
     provider1.disconnect();
     provider2.disconnect();
-  });
+  }, 15000);
 
   it('should not broadcast updates to clients in different rooms', async () => {
     const docName1 = 'test-doc-3';

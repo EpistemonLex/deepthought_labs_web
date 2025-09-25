@@ -58,4 +58,17 @@ describe('ChallengeResponseAuthenticator', () => {
       expect(screen.getByText('Invalid signature')).toBeInTheDocument();
     });
   });
+
+  it('shows a generic error message for non-API errors', async () => {
+    mockedVerifySignature.mockRejectedValue(new Error('Something went wrong'));
+
+    render(<ChallengeResponseAuthenticator />);
+    fireEvent.click(screen.getByText('Login with DeepThought'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Status: Failed')).toBeInTheDocument();
+      expect(screen.getByTestId('error-message')).toBeInTheDocument();
+      expect(screen.getByText('Something went wrong')).toBeInTheDocument();
+    });
+  });
 });
