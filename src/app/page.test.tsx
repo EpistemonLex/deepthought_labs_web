@@ -9,23 +9,19 @@ vi.mock('../components/Header', () => ({
   default: () => <header>Mocked Header</header>,
 }));
 
+vi.mock('../components/ChaosToClarityStoryboard', () => ({
+  __esModule: true,
+  default: () => <div>Mocked Storyboard</div>,
+}));
+
 describe('Homepage', () => {
-  it('renders the main heading and the whitepaper link', () => {
+  it('renders the header, storyboard, and footer', () => {
     render(<HomePage />);
 
-    // Check for the main heading
-    expect(
-      screen.getByRole('heading', {
-        name: /The Architecture of Synthesis/i,
-        level: 2,
-      }),
-    ).toBeInTheDocument();
-
-    // Check for the link to the whitepaper
-    const whitepaperLink = screen.getByRole('link', {
-      name: /Read the Whitepaper/i,
-    });
-    expect(whitepaperLink).toBeInTheDocument();
-    expect(whitepaperLink).toHaveAttribute('href', '/whitepaper');
+    expect(screen.getByRole('banner')).toHaveTextContent('Mocked Header');
+    expect(screen.getByRole('main')).toHaveTextContent('Mocked Storyboard');
+    expect(screen.getByRole('contentinfo')).toHaveTextContent(
+      'DeepThought Labs',
+    );
   });
 });

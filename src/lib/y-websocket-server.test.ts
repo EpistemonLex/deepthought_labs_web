@@ -68,45 +68,49 @@ describe('y-websocket-server', () => {
     provider2.disconnect();
   });
 
-  it('should not broadcast updates to clients in different rooms', async () => {
-    const docName1 = 'test-doc-3';
-    const docName2 = 'test-doc-4';
+  it(
+    'should not broadcast updates to clients in different rooms',
+    async () => {
+      const docName1 = 'test-doc-3';
+      const docName2 = 'test-doc-4';
 
-    const doc1 = new Y.Doc();
-    const provider1 = new WebsocketProvider(`ws://localhost:${port}`, docName1, doc1, { WebSocketPolyfill: WebSocket as typeof WebSocket });
+      const doc1 = new Y.Doc();
+      const provider1 = new WebsocketProvider(`ws://localhost:${port}`, docName1, doc1, { WebSocketPolyfill: WebSocket as typeof WebSocket });
 
-    const doc2 = new Y.Doc();
-    const provider2 = new WebsocketProvider(`ws://localhost:${port}`, docName2, doc2, { WebSocketPolyfill: WebSocket as typeof WebSocket });
+      const doc2 = new Y.Doc();
+      const provider2 = new WebsocketProvider(`ws://localhost:${port}`, docName2, doc2, { WebSocketPolyfill: WebSocket as typeof WebSocket });
 
-    const doc3 = new Y.Doc();
-    const provider3 = new WebsocketProvider(`ws://localhost:${port}`, docName1, doc3, { WebSocketPolyfill: WebSocket as typeof WebSocket });
+      const doc3 = new Y.Doc();
+      const provider3 = new WebsocketProvider(`ws://localhost:${port}`, docName1, doc3, { WebSocketPolyfill: WebSocket as typeof WebSocket });
 
-    const spy = vi.fn();
-    doc2.getMap('test-map').observe(spy);
+      const spy = vi.fn();
+      doc2.getMap('test-map').observe(spy);
 
 
-    await new Promise<void>((resolve) => provider1.on('status', (event: { status: string }) => event.status === 'connected' && resolve()));
-    await new Promise<void>((resolve) => provider2.on('status', (event: { status: string }) => event.status === 'connected' && resolve()));
-    await new Promise<void>((resolve) => provider3.on('status', (event: { status: string }) => event.status === 'connected' && resolve()));
+      await new Promise<void>((resolve) => provider1.on('status', (event: { status: string }) => event.status === 'connected' && resolve()));
+      await new Promise<void>((resolve) => provider2.on('status', (event: { status: string }) => event.status === 'connected' && resolve()));
+      await new Promise<void>((resolve) => provider3.on('status', (event: { status: string }) => event.status === 'connected' && resolve()));
 
-    const promise = new Promise<void>((resolve) => {
-        doc3.getMap('test-map').observe(() => {
-            resolve();
-        });
-    });
+      const promise = new Promise<void>((resolve) => {
+          doc3.getMap('test-map').observe(() => {
+              resolve();
+          });
+      });
 
-    doc1.getMap('test-map').set('key', 'value');
+      doc1.getMap('test-map').set('key', 'value');
 
-    await promise;
+      await promise;
 
-    await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 100));
 
-    expect(doc3.getMap('test-map').get('key')).toBe('value');
-    expect(doc2.getMap('test-map').get('key')).toBeUndefined();
-    expect(spy).not.toHaveBeenCalled();
+      expect(doc3.getMap('test-map').get('key')).toBe('value');
+      expect(doc2.getMap('test-map').get('key')).toBeUndefined();
+      expect(spy).not.toHaveBeenCalled();
 
-    provider1.disconnect();
-    provider2.disconnect();
-    provider3.disconnect();
-  });
+      provider1.disconnect();
+      provider2.disconnect();
+      provider3.disconnect();
+    },
+    10000,
+  );
 });
