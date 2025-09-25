@@ -93,4 +93,77 @@ describe('DownloadRequestForm', () => {
       expect(screen.getByText('This license is not eligible for downloads.')).toBeInTheDocument();
     });
   });
+
+  it('calls handleDownload when the "Download Now" button is clicked', async () => {
+    const downloadResponse = {
+      status: 'success',
+      message: 'Download ready.',
+      download_token: 'test-token',
+      file_name: 'test-file.zip',
+      file_size: 12345,
+    };
+    const mockedRequestDownload = sovereign.requestDownload as vi.Mock;
+    mockedRequestDownload.mockResolvedValue(downloadResponse);
+    render(<DownloadRequestForm />);
+
+    fireEvent.change(screen.getByLabelText('License Key'), { target: { value: 'some-key' } });
+    fireEvent.change(screen.getByLabelText('Product ID'), { target: { value: 'some-product' } });
+    fireEvent.change(screen.getByLabelText('Version'), { target: { value: '1.0' } });
+    fireEvent.change(screen.getByLabelText('Platform'), { target: { value: 'windows' } });
+    fireEvent.click(screen.getByRole('button', { name: /Request Download/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Download Now')).toBeInTheDocument();
+    });
+
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    fireEvent.click(screen.getByText('Download Now'));
+    expect(openSpy).toHaveBeenCalledWith(
+      'http://localhost:8000/api/v1/downloads/retrieve/test-token',
+      '_blank'
+    );
+  });
+
+  it('displays an informational message when the download response status is not "success"', async () => {
+    const downloadResponse = {
+      status: 'error',
+      message: 'This license is not eligible for downloads.',
+    };
+    const mockedRequestDownload = sovereign.requestDownload as vi.Mock;
+    mockedRequestDownload.mockResolvedValue(downloadResponse);
+    render(<DownloadRequestForm />);
+
+    fireEvent.change(screen.getByLabelText('License Key'), { target: { value: 'some-key' } });
+    fireEvent.change(screen.getByLabelText('Product ID'), { target: { value: 'some-product' } });
+    fireEvent.change(screen.getByLabelText('Version'), { target: { value: '1.0' } });
+    fireEvent.change(screen.getByLabelText('Platform'), { target: { value: 'windows' } });
+    fireEvent.click(screen.getByRole('button', { name: /Request Download/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('This license is not eligible for downloads.')).toBeInTheDocument();
+    });
+  });
+
+  it('formats the file size correctly', async () => {
+    const downloadResponse = {
+        status: 'success',
+        message: 'Download ready.',
+        download_token: 'test-token',
+        file_name: 'test-file.zip',
+        file_size: 12345678,
+    };
+    const mockedRequestDownload = sovereign.requestDownload as vi.Mock;
+    mockedRequestDownload.mockResolvedValue(downloadResponse);
+    render(<DownloadRequestForm />);
+
+    fireEvent.change(screen.getByLabelText('License Key'), { target: { value: 'some-key' } });
+    fireEvent.change(screen.getByLabelText('Product ID'), { target: { value: 'some-product' } });
+    fireEvent.change(screen.getByLabelText('Version'), { target: { value: '1.0' } });
+    fireEvent.change(screen.getByLabelText('Platform'), { target: { value: 'windows' } });
+    fireEvent.click(screen.getByRole('button', { name: /Request Download/i }));
+
+    await waitFor(() => {
+        expect(screen.getByText('Size: 11.77 MB')).toBeInTheDocument();
+    });
+  });
 });
