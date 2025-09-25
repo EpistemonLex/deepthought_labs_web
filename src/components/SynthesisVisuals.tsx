@@ -67,7 +67,7 @@ const SynthesisVisuals = () => {
               {connections.map((conn, index) => {
                 const fromItem = keyItems.find(i => i.id === conn.from);
                 const toItem = keyItems.find(i => i.id === conn.to);
-                if (!fromItem || !toItem) return null;
+                if (!fromItem || !toItem || !fromItem.position || !toItem.position) return null;
 
                 // These are approximations for line start/end points
                 const x1 = `${parseInt(fromItem.position.left) + 5}%`;

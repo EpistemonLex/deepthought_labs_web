@@ -16,16 +16,15 @@ describe('Homepage', () => {
     // Check for the main heading
     expect(
       screen.getByRole('heading', {
-        name: /The Architecture of Synthesis/i,
+        name: /First, We Deconstruct./i,
         level: 2,
       }),
     ).toBeInTheDocument();
 
     // Check for the link to the whitepaper
-    const whitepaperLink = screen.getByRole('link', {
-      name: /Read the Whitepaper/i,
+    const whitepaperLink = screen.getByRole('button', {
+      name: /\[ Notify Me When the Interactive Demo is Live \]/i,
     });
     expect(whitepaperLink).toBeInTheDocument();
-    expect(whitepaperLink).toHaveAttribute('href', '/whitepaper');
   });
 });
