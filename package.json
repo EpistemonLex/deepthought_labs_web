@@ -11,7 +11,7 @@
     "format:check": "prettier --check .",
     "test": "npx vitest --config=vitest.config.mjs",
     "test:watch": "npx vitest --config=vitest.config.mjs --watch",
-    "test:e2e": "playwright test --config=tests/playwright.config.mjs",
+    "test:e2e": "playwright test --config=playwright.config.mjs",
     "verify": "npm run lint && npm run build && npm run test",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -66,6 +66,7 @@
     "tailwindcss": "^4",
     "tsx": "^4.7.1",
     "typescript": "^5",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4",
     "ws": "^8.18.3",
     "y-websocket": "^3.0.0"

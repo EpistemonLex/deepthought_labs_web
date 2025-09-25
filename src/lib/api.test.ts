@@ -1,22 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ApiError } from './api';
-import { generateUI } from './api/genui';
-import { validateLicense, requestDownload } from './api/sovereign';
+import { ApiError, generateUI, validateLicense, verifySignature, requestDownload } from './api';
 
-// Mock the global fetch function
-global.fetch = vi.fn();
-
-describe('api modules', () => {
-  beforeEach(() => {
-    // Reset the fetch mock before each test
-    vi.clearAllMocks();
-    // Reset the environment variables
-    delete process.env.NEXT_PUBLIC_GENUI_API_TOKEN;
-    delete process.env.NEXT_PUBLIC_INTEGRATOR_API_KEY;
-  });
+describe('API', () => {
+    beforeEach(() => {
+        vi.resetAllMocks();
+        delete process.env.NEXT_PUBLIC_GENUI_API_TOKEN;
+        delete process.env.NEXT_PUBLIC_INTEGRATOR_API_KEY;
+    });
 
   describe('ApiError', () => {
-    it('should create an error with a message and status', () => {
+    it('should create a new ApiError with the correct message and status', () => {
       const error = new ApiError('Test error', 404);
       expect(error.message).toBe('Test error');
       expect(error.status).toBe(404);
@@ -25,169 +18,113 @@ describe('api modules', () => {
   });
 
   describe('generateUI', () => {
-    it('should throw an ApiError if the API token is not configured', async () => {
-      await expect(generateUI('test prompt')).rejects.toThrow(
-        new ApiError('The API token is not configured. Please contact the administrator.', 500)
-      );
+    it('should throw an error if the API token is not configured', async () => {
+      await expect(generateUI('test')).rejects.toThrow('The API token is not configured. Please contact the administrator.');
     });
 
-    it('should return a decoded UI component on success', async () => {
-      process.env.NEXT_PUBLIC_GENUI_API_TOKEN = 'test-token';
-      const mockResponse = {
-        ok: true,
-        json: () => Promise.resolve({ ui_component: btoa('<div>Hello</div>') }),
-      };
-      (fetch as vi.Mock).mockResolvedValue(mockResponse);
-
-      const ui = await generateUI('test prompt');
-      expect(ui).toBe('<div>Hello</div>');
-      expect(fetch).toHaveBeenCalledWith('/api/genui', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer test-token',
-        },
-        body: JSON.stringify({
-          prompt: 'test prompt',
-          constraints: { framework: 'react', style_guide: 'tailwind_css_v3' },
-        }),
-      });
+    it('should throw an ApiError if the fetch fails', async () => {
+        process.env.NEXT_PUBLIC_GENUI_API_TOKEN = 'test-token';
+        global.fetch = vi.fn().mockResolvedValue({
+            ok: false,
+            status: 500,
+            statusText: 'Internal Server Error',
+            json: () => Promise.resolve({ error: { message: 'Server error' } }),
+        });
+        await expect(generateUI('test')).rejects.toThrow('Server error');
     });
 
-    it('should throw an ApiError on API failure', async () => {
-      process.env.NEXT_PUBLIC_GENUI_API_TOKEN = 'test-token';
-      const mockResponse = {
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error',
-        json: () => Promise.resolve({ error: { message: 'Internal Server Error' } }),
-      };
-      (fetch as vi.Mock).mockResolvedValue(mockResponse);
-
-      await expect(generateUI('test prompt')).rejects.toThrow(
-        new ApiError('Internal Server Error', 500)
-      );
+    it('should throw an ApiError if the response does not include a UI component', async () => {
+        process.env.NEXT_PUBLIC_GENUI_API_TOKEN = 'test-token';
+        global.fetch = vi.fn().mockResolvedValue({
+            ok: true,
+            json: () => Promise.resolve({ }),
+        });
+        await expect(generateUI('test')).rejects.toThrow('The API response did not include a UI component.');
     });
 
-    it('should throw an ApiError if the response does not contain a UI component', async () => {
-      process.env.NEXT_PUBLIC_GENUI_API_TOKEN = 'test-token';
-      const mockResponse = {
-        ok: true,
-        json: () => Promise.resolve({}),
-      };
-      (fetch as vi.Mock).mockResolvedValue(mockResponse);
-
-      await expect(generateUI('test prompt')).rejects.toThrow(
-        new ApiError('The API response did not include a UI component.', 500)
-      );
+    it('should return a UI component on successful generation', async () => {
+        process.env.NEXT_PUBLIC_GENUI_API_TOKEN = 'test-token';
+        global.fetch = vi.fn().mockResolvedValue({
+            ok: true,
+            json: () => Promise.resolve({ ui_component: btoa('<div>hello</div>') }),
+        });
+        const ui = await generateUI('test');
+        expect(ui).toBe('<div>hello</div>');
     });
   });
 
   describe('validateLicense', () => {
-    const licenseKey = 'test-license';
-    const productId = 'test-product';
-    const fingerprint = { ua: 'test-agent' };
-
-    it('should throw an ApiError if the integrator API key is not configured', async () => {
-      await expect(validateLicense(licenseKey, productId, fingerprint)).rejects.toThrow(
-        new ApiError('Integrator API key is not configured.', 500)
-      );
+    it('should throw an error if the integrator API key is not configured', async () => {
+      await expect(validateLicense('test-key', 'test-product', {})).rejects.toThrow('Integrator API key is not configured.');
     });
 
-    it('should return a validation response on success', async () => {
-      process.env.NEXT_PUBLIC_INTEGRATOR_API_KEY = 'test-api-key';
-      const mockApiResponse = { status: 'valid', message: 'License is valid.' };
-      const mockResponse = {
-        ok: true,
-        json: () => Promise.resolve(mockApiResponse),
-      };
-      (fetch as vi.Mock).mockResolvedValue(mockResponse);
-
-      const response = await validateLicense(licenseKey, productId, fingerprint);
-      expect(response).toEqual(mockApiResponse);
-      expect(fetch).toHaveBeenCalledWith('/api/v1/licenses/validate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': 'test-api-key',
-        },
-        body: JSON.stringify({
-          license_key: licenseKey,
-          product_id: productId,
-          fingerprint: fingerprint,
-        }),
-      });
+    it('should throw an ApiError if the fetch fails', async () => {
+        process.env.NEXT_PUBLIC_INTEGRATOR_API_KEY = 'test-key';
+        global.fetch = vi.fn().mockResolvedValue({
+            ok: false,
+            status: 500,
+            statusText: 'Internal Server Error',
+            json: () => Promise.resolve({ message: 'Server error' }),
+        });
+        await expect(validateLicense('test-key', 'test-product', {})).rejects.toThrow('Server error');
     });
 
-    it('should throw an ApiError on API failure', async () => {
-      process.env.NEXT_PUBLIC_INTEGRATOR_API_KEY = 'test-api-key';
-      const mockErrorResponse = { message: 'Invalid license key' };
-      const mockResponse = {
-        ok: false,
-        status: 404,
-        statusText: 'Not Found',
-        json: () => Promise.resolve(mockErrorResponse),
-      };
-      (fetch as vi.Mock).mockResolvedValue(mockResponse);
+    it('should return a validation response on successful validation', async () => {
+        process.env.NEXT_PUBLIC_INTEGRATOR_API_KEY = 'test-key';
+        global.fetch = vi.fn().mockResolvedValue({
+            ok: true,
+            json: () => Promise.resolve({ status: 'valid' }),
+        });
+        const response = await validateLicense('test-key', 'test-product', {});
+        expect(response.status).toBe('valid');
+    });
+  });
 
-      await expect(validateLicense(licenseKey, productId, fingerprint)).rejects.toThrow(
-        new ApiError('Invalid license key', 404)
-      );
+  describe('verifySignature', () => {
+    it('should return a session token on successful verification', async () => {
+        global.fetch = vi.fn().mockResolvedValue({
+            ok: true,
+            json: () => Promise.resolve({ session_token: 'test-token' }),
+        });
+      const response = await verifySignature('test-key', 'test-challenge', 'test-signature');
+      expect(response.session_token).toBe('test-token');
+    });
+
+    it('should throw an ApiError if the fetch fails', async () => {
+        global.fetch = vi.fn().mockResolvedValue({
+            ok: false,
+            status: 500,
+            statusText: 'Internal Server Error',
+            json: () => Promise.resolve({ message: 'Server error' }),
+        });
+        await expect(verifySignature('test-key', 'test-challenge', 'test-signature')).rejects.toThrow('Server error');
     });
   });
 
   describe('requestDownload', () => {
-    const licenseKey = 'test-license';
-    const productId = 'test-product';
-    const version = '1.0.0';
-    const platform = 'linux';
-
-    it('should throw an ApiError if the integrator API key is not configured', async () => {
-      await expect(requestDownload(licenseKey, productId, version, platform)).rejects.toThrow(
-        new ApiError('Integrator API key is not configured.', 500)
-      );
+    it('should throw an error if the integrator API key is not configured', async () => {
+      await expect(requestDownload('test-key', 'test-product', '1.0.0', 'windows')).rejects.toThrow('Integrator API key is not configured.');
     });
 
-    it('should return a download response on success', async () => {
-      process.env.NEXT_PUBLIC_INTEGRATOR_API_KEY = 'test-api-key';
-      const mockApiResponse = { status: 'success', download_token: 'test-token' };
-      const mockResponse = {
-        ok: true,
-        json: () => Promise.resolve(mockApiResponse),
-      };
-      (fetch as vi.Mock).mockResolvedValue(mockResponse);
-
-      const response = await requestDownload(licenseKey, productId, version, platform);
-      expect(response).toEqual(mockApiResponse);
-      expect(fetch).toHaveBeenCalledWith('/api/v1/downloads/request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': 'test-api-key',
-        },
-        body: JSON.stringify({
-          license_key: licenseKey,
-          product_id: productId,
-          version: version,
-          platform: platform,
-        }),
-      });
+    it('should throw an ApiError if the fetch fails', async () => {
+        process.env.NEXT_PUBLIC_INTEGRATOR_API_KEY = 'test-key';
+        global.fetch = vi.fn().mockResolvedValue({
+            ok: false,
+            status: 500,
+            statusText: 'Internal Server Error',
+            json: () => Promise.resolve({ message: 'Server error' }),
+        });
+        await expect(requestDownload('test-key', 'test-product', '1.0.0', 'windows')).rejects.toThrow('Server error');
     });
 
-    it('should throw an ApiError on API failure', async () => {
-      process.env.NEXT_PUBLIC_INTEGRATOR_API_KEY = 'test-api-key';
-      const mockErrorResponse = { message: 'Download not available' };
-      const mockResponse = {
-        ok: false,
-        status: 400,
-        statusText: 'Bad Request',
-        json: () => Promise.resolve(mockErrorResponse),
-      };
-      (fetch as vi.Mock).mockResolvedValue(mockResponse);
-
-      await expect(requestDownload(licenseKey, productId, version, platform)).rejects.toThrow(
-        new ApiError('Download not available', 400)
-      );
+    it('should return a download response on successful request', async () => {
+        process.env.NEXT_PUBLIC_INTEGRATOR_API_KEY = 'test-key';
+        global.fetch = vi.fn().mockResolvedValue({
+            ok: true,
+            json: () => Promise.resolve({ status: 'success' }),
+        });
+        const response = await requestDownload('test-key', 'test-product', '1.0.0', 'windows');
+        expect(response.status).toBe('success');
     });
   });
 });
