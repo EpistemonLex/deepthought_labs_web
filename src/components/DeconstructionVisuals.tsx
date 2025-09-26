@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const FlotsamItem = ({ content }: { content: string }) => (
@@ -32,8 +32,18 @@ const bucketTitles: { [key: string]: string } = {
   idea: 'Ideas',
 };
 
-const DeconstructionVisuals = () => {
-  const [isSorted, setIsSorted] = useState(false);
+type DeconstructionVisualsProps = {
+  initialState?: 'chaos' | 'sorted';
+};
+
+const DeconstructionVisuals = ({ initialState = 'chaos' }: DeconstructionVisualsProps) => {
+  const [isSorted, setIsSorted] = useState(initialState === 'sorted');
+
+  useEffect(() => {
+    if (initialState === 'sorted') {
+      setIsSorted(true);
+    }
+  }, [initialState]);
 
   // Memoize the random initial positions so they don't change on re-render
   const chaosPositions = useMemo(() => 
@@ -46,8 +56,8 @@ const DeconstructionVisuals = () => {
   return (
     <motion.div 
       className="relative w-full max-w-3xl h-[28rem] bg-gray-800/20 rounded-lg border border-gray-700 flex items-center justify-center"
-      onViewportEnter={() => setIsSorted(true)}
-      onViewportLeave={() => setIsSorted(false)}
+      onViewportEnter={() => initialState === 'chaos' && setIsSorted(true)}
+      onViewportLeave={() => initialState === 'chaos' && setIsSorted(false)}
       viewport={{ amount: 0.6 }}
     >
       <AnimatePresence>
