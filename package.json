@@ -11,9 +11,8 @@
     "format:check": "prettier --check .",
     "test": "npx vitest --config=vitest.config.mjs",
     "test:watch": "npx vitest --config=vitest.config.mjs --watch",
-
+    "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test --config=playwright.config.mjs",
-
     "verify": "npm run lint && npm run build && npm run test",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
